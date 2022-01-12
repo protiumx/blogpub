@@ -1,0 +1,23 @@
+name: blogpub
+author: "protium"
+description: "Create blog posts using Medium and Dev.to APIs. Upload automatically all images."
+inputs:
+  medium_token:
+    description: "Medium API Token"
+    required: true
+  devto_token:
+    description: "Dev.to API Token"
+    required: false
+outputs:
+  medium_url:
+    description: 'The Medium URL of the published article'
+
+  devto_url:
+    description: 'The Dev.to URL of the published article'
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+  - "-medium_token=${{ inputs.medium_token }}"
+  - "-devto_token=${{ inputs.devto_token }}"
+  
