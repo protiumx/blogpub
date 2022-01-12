@@ -1,0 +1,32 @@
+name: 'CI'
+
+on:
+  push:
+    branches:
+      - '*'
+    paths:
+      - '.github/workflows/ci.yaml'
+      - 'package.json'
+      - 'src/**'
+      - 'tests/*'
+      - 'tsconfig.json'
+      - 'tslint.json'
+  pull_request:
+    paths:
+      - '.github/workflows/ci.yaml'
+      - 'package.json'
+      - 'src/**'
+      - 'tests/*'
+      - 'tsconfig.json'
+      - 'tslint.json'
+jobs:
+  test:
+    name: unit test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@v2.3.4
+      - name: Lint code
+        run: yarn lint
+      - name: Test code
+        run: yarn test
