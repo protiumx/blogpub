@@ -181,7 +181,7 @@ describe('blogpub', () => {
     await run();
 
     expect(getOctokit).toHaveBeenCalledWith('github-token');
-    expect(core.getInput).toHaveBeenCalledWith('token', { required: true });
+    expect(core.getInput).toHaveBeenCalledWith('gh_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_base_url', { required: false });

@@ -5,10 +5,13 @@ branding:
   icon: 'book-open'
 description: 'Create blog posts using Medium and Dev.to APIs. Upload automatically all images.'
 inputs:
+  gh_token:
+    description: 'Github token'
+    required: true
   articles_folder:
     description: 'Folder where articles are placed'
     required: false
-    default: blog
+    default: blogs
   medium_token:
     description: 'Medium API Token'
     required: true
