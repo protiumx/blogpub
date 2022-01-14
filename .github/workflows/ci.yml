@@ -29,6 +29,4 @@ jobs:
       - name: Lint code
         run: yarn lint
       - name: Test code
-        with:
-          token: ${{ secrets.YOUR_PAT }}
         run: yarn test
