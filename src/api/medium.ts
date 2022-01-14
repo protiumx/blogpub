@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Article } from 'src/types';
+
+import { Article, PublishedArticle } from '$/types';
 
 const MAX_TAGS = 5;
 
@@ -14,7 +15,7 @@ export async function createArticle(
   baseUrl: string,
   userId: string,
   article: Article,
-): Promise<string> {
+): Promise<PublishedArticle> {
   const result = (
     await axios.post(
       `${baseUrl}/users/${userId}/posts`,
@@ -24,7 +25,7 @@ export async function createArticle(
         content: article.content,
         license: article.config.license,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        tags: article.config.tags!.slice(0, MAX_TAGS + 1),
+        tags: article.config.tags!.slice(0, MAX_TAGS),
         publishStatus: PublishStatus.Public,
       },
       {
@@ -33,6 +34,6 @@ export async function createArticle(
         },
       },
     )
-  ).data as { url: string };
-  return result.url;
+  ).data as PublishedArticle;
+  return result;
 }

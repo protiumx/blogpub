@@ -2,7 +2,8 @@ import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { promises } from 'fs';
 
-import { createArticle } from '$/api/medium';
+import * as devto from '$/api/devto';
+import * as medium from '$/api/medium';
 import { run } from '$/main';
 import { parseArticle } from '$/parser';
 
@@ -19,6 +20,7 @@ jest.mock('fs', () => ({
   },
 }));
 jest.mock('$/api/medium');
+jest.mock('$/api/devto');
 jest.mock('$/parser');
 jest.mock('@actions/github', () => ({
   context: {
@@ -140,7 +142,7 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    (createArticle as jest.Mock).mockRejectedValue(err);
+    (medium.createArticle as jest.Mock).mockRejectedValue(err);
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
@@ -151,11 +153,11 @@ describe('blogpub', () => {
 
     await run();
 
-    expect(createArticle).toHaveBeenCalledWith('mediumToken', 'baseUrl', 'user', {
+    expect(medium.createArticle).toHaveBeenCalledWith('mediumToken', 'baseUrl', 'user', {
       config: { title: 'New' },
       content: 'parsed',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Uploading article New to Medium');
+    expect(core.debug).toHaveBeenNthCalledWith(3, 'Creating Medium article: "New"');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
@@ -166,7 +168,8 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    (createArticle as jest.Mock).mockResolvedValue('medium.com/new');
+    (devto.createArticle as jest.Mock).mockRejectedValue(null);
+    (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
@@ -185,5 +188,82 @@ describe('blogpub', () => {
 
     expect(core.debug).toHaveBeenNthCalledWith(4, 'Article uploaded to Medium: medium.com/new');
     expect(core.setOutput).toHaveBeenCalledWith('medium_url', 'medium.com/new');
+  });
+
+  it('should set failed if fails to create dev.to article', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      switch (key) {
+        case 'articles_folder':
+          return 'blogs';
+        case 'devto_api_key':
+          return 'devtoApiKey';
+        default:
+          return '';
+      }
+    });
+    const err = new Error('createArticle');
+
+    (promises.readFile as jest.Mock).mockResolvedValue('content');
+    (parseArticle as jest.Mock).mockReturnValue({
+      config: { title: 'New' },
+      content: 'parsed',
+    });
+    (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
+    (devto.createArticle as jest.Mock).mockRejectedValue(err);
+    octokitMock.rest.pulls.listFiles.mockResolvedValue({
+      data: [
+        {
+          filename: 'blogs/blog-01.md',
+        },
+      ],
+    });
+
+    await run();
+
+    expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
+      config: { title: 'New' },
+      content: 'parsed',
+    });
+    expect(core.debug).toHaveBeenNthCalledWith(5, 'Creating Dev.To article: "New"');
+    expect(core.setFailed).toHaveBeenCalledWith(err);
+  });
+
+  it('should upload article to dev.to and set dev.tp url output', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      switch (key) {
+        case 'articles_folder':
+          return 'blogs';
+        case 'devto_api_key':
+          return 'devtoApiKey';
+        default:
+          return '';
+      }
+    });
+    const err = new Error('createArticle');
+
+    (promises.readFile as jest.Mock).mockResolvedValue('content');
+    (parseArticle as jest.Mock).mockReturnValue({
+      config: { title: 'New' },
+      content: 'parsed',
+    });
+    (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
+    (devto.createArticle as jest.Mock).mockResolvedValue({ url: 'dev.to/new' });
+    octokitMock.rest.pulls.listFiles.mockResolvedValue({
+      data: [
+        {
+          filename: 'blogs/blog-01.md',
+        },
+      ],
+    });
+
+    await run();
+
+    expect(core.getInput).toHaveBeenCalledWith('devto_api_key', { required: true });
+    expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
+      config: { title: 'New' },
+      content: 'parsed',
+    });
+    expect(core.debug).toHaveBeenNthCalledWith(6, 'Article uploaded to Dev.To: dev.to/new');
+    expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
   });
 });
