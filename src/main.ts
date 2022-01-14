@@ -16,7 +16,7 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
     owner,
     repo,
     // https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts#L60
-    pull_number: process.env.PR as unknown as number,
+    pull_number: parseInt(process.env.PR as unknown as string, 10),
   });
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
   const mdFiles = files.data.filter((f) => articleFileRegex.test(f.filename));

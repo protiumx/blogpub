@@ -28,15 +28,13 @@ jest.mock('@actions/github', () => ({
       owner: 'owner',
       repo: 'repo',
     },
-    issue: {
-      number: 10,
-    },
   },
   getOctokit: jest.fn(),
 }));
 jest.mock('@actions/core');
 
 describe('blogpub', () => {
+  process.env.PR = '10';
   beforeEach(jest.clearAllMocks);
 
   (getOctokit as jest.Mock).mockReturnValue(octokitMock);
