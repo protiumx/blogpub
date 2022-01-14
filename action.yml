@@ -19,9 +19,9 @@ inputs:
   medium_user_id:
     description: 'Medium user Id'
     required: true
-  devto_token:
+  devto_api_key:
     description: 'Dev.to API Token'
-    required: false
+    required: true
 outputs:
   medium_url:
     description: 'The Medium URL of the published article'
@@ -30,5 +30,5 @@ outputs:
     description: 'The Dev.to URL of the published article'
 runs:
   using: 'node16'
-  main: 'dist/blogpub.js'
+  main: 'build/blogpub.js'
    
