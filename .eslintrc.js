@@ -58,4 +58,12 @@ module.exports = {
     'one-var': 'off',
     semi: ['error', 'always'],
   },
+  overrides: [
+    {
+      files: ['test/*'],
+      rules: {
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+      },
+    },
+  ],
 };

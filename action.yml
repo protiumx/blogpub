@@ -8,6 +8,13 @@ inputs:
   medium_token:
     description: 'Medium API Token'
     required: true
+  medium_base_url:
+    description: 'Medium base URL'
+    required: false
+    default: 'https://api.medium.com/v1'
+  medium_user_id:
+    description: 'Medium user Id'
+    required: true
   devto_token:
     description: 'Dev.to API Token'
     required: false
@@ -20,4 +27,4 @@ outputs:
 runs:
   using: 'node16'
   main: 'dist/blogpub.js'
-  
+   

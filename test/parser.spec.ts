@@ -1,6 +1,8 @@
 import { parseArticle } from '$/parser';
 
 describe('parser', () => {
+  beforeEach(jest.clearAllMocks);
+
   it('should error when article does not contain metadata', () => {
     expect(parseArticle.bind(null, '')).toThrowError('Incorrect metadata');
   });
