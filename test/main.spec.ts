@@ -90,7 +90,7 @@ describe('blogpub', () => {
     await run();
 
     expect(core.debug).toHaveBeenCalledWith('Using blogs/blog-01.md');
-    expect(promises.readFile).toHaveBeenCalledWith('blogs/blog-01.md', 'utf8');
+    expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
