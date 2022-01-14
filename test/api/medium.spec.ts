@@ -10,8 +10,12 @@ describe('medium client', () => {
 
   it('should create article and return new url', async () => {
     (axios.post as jest.Mock).mockResolvedValue({ data: { url: 'medium/new' } });
-    const url = await createArticle('token', 'medium.com', 'user', {
-      config: { title: 'New', license: MediumLicense.CC40Zero, tags: [] },
+    const published = await createArticle('token', 'medium.com', 'user', {
+      config: {
+        title: 'New',
+        license: MediumLicense.CC40Zero,
+        tags: ['one', 'two', 'three', 'four', 'five', 'six'],
+      },
       content: 'Content',
     });
 
@@ -23,7 +27,7 @@ describe('medium client', () => {
         contentFormat: 'markdown',
         content: 'Content',
         license: MediumLicense.CC40Zero,
-        tags: [],
+        tags: ['one', 'two', 'three', 'four', 'five'],
         publishStatus: PublishStatus.Public,
       },
       {
@@ -32,6 +36,6 @@ describe('medium client', () => {
         },
       },
     );
-    expect(url).toEqual('medium/new');
+    expect(published).toEqual({ url: 'medium/new' });
   });
 });

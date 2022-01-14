@@ -11,6 +11,7 @@ export enum MediumLicense {
 }
 
 export interface ArticleConfig {
+  description?: string;
   title?: string;
   tags?: string[];
   license?: MediumLicense;
@@ -19,4 +20,8 @@ export interface ArticleConfig {
 export interface Article {
   config: ArticleConfig;
   content: string;
+}
+
+export interface PublishedArticle {
+  url: string;
 }
