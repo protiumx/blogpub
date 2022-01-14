@@ -9,12 +9,16 @@
   "packageManager": "yarn@3.1.1",
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "@actions/github": "^5.0.0"
+    "@actions/github": "^5.0.0",
+    "axios": "^0.24.0",
+    "handlebars": "^4.7.7",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "#": "link:./test",
     "$": "link:./src",
     "@types/jest": "^27.4.0",
+    "@types/js-yaml": "^4.0.5",
     "@types/node": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
@@ -38,5 +42,8 @@
     "build": "webpack --progress",
     "lint": "eslint ./src/**/*.ts ./test/**/*.ts",
     "test": "jest --coverage"
+  },
+  "engines": {
+    "node": ">=11.14.0"
   }
 }
