@@ -3,7 +3,7 @@ name: 'CI'
 on:
   push:
     branches:
-      - '*'
+      - 'main'
     paths:
       - '.github/workflows/ci.yaml'
       - 'package.json'
