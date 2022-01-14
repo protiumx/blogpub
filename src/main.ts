@@ -8,7 +8,7 @@ import { parseArticle } from '$/parser';
 
 type Github = ReturnType<typeof getOctokit>;
 
-async function loadArticleContent(github: Github): Promise<string> {
+async function loadArticleContent(github: Github, folderName: string): Promise<string> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
   const files = await github.rest.pulls.listFiles({
@@ -17,7 +17,8 @@ async function loadArticleContent(github: Github): Promise<string> {
     // https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts#L60
     pull_number: context.issue.number,
   });
-  const mdFiles = files.data.filter((f) => f.filename.includes('.md'));
+  const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
+  const mdFiles = files.data.filter((f) => articleFileRegex.test(f.filename));
   core.debug(`Found ${mdFiles.length} markdown files`);
   if (mdFiles.length == 0) {
     throw new Error('No markdown files found');
@@ -32,13 +33,14 @@ async function loadArticleContent(github: Github): Promise<string> {
 export async function run() {
   try {
     const token = core.getInput('token', { required: true });
+    const articlesFolder = core.getInput('articles_folder', { required: false });
     const mediumToken = core.getInput('medium_token', { required: true });
     const mediumUserId = core.getInput('medium_user_id', { required: true });
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
 
     const github = getOctokit(token);
 
-    const articleContent = await loadArticleContent(github);
+    const articleContent = await loadArticleContent(github, articlesFolder);
     const article = parseArticle(articleContent);
 
     core.debug(`Uploading article ${article.config.title!} to Medium`);

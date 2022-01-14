@@ -54,6 +54,9 @@ describe('blogpub', () => {
   });
 
   it('should set failed if no markdown files found', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      return key === 'articles_folder' ? 'blogs' : '';
+    });
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
@@ -71,24 +74,31 @@ describe('blogpub', () => {
   });
 
   it('should set failed if fails to read article file', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      return key === 'articles_folder' ? 'blogs' : '';
+    });
     const err = new Error('fs');
     (promises.readFile as jest.Mock).mockRejectedValue(err);
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
-          filename: 'blog-01.md',
+          filename: 'blogs/blog-01.md',
         },
       ],
     });
 
     await run();
 
-    expect(core.debug).toHaveBeenCalledWith('Using blog-01.md');
-    expect(promises.readFile).toHaveBeenCalledWith('blog-01.md', 'utf8');
+    expect(core.debug).toHaveBeenCalledWith('Using blogs/blog-01.md');
+    expect(promises.readFile).toHaveBeenCalledWith('blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should set failed if fails to parse article', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      return key === 'articles_folder' ? 'blogs' : '';
+    });
+
     const err = new Error('parseArticle');
 
     (promises.readFile as jest.Mock).mockResolvedValue('content');
@@ -98,7 +108,7 @@ describe('blogpub', () => {
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
-          filename: 'blog-01.md',
+          filename: 'blogs/blog-01.md',
         },
       ],
     });
@@ -109,6 +119,20 @@ describe('blogpub', () => {
   });
 
   it('should set failed if fails to create medium article', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      switch (key) {
+        case 'articles_folder':
+          return 'blogs';
+        case 'medium_token':
+          return 'mediumToken';
+        case 'medium_user_id':
+          return 'user';
+        case 'medium_base_url':
+          return 'baseUrl';
+        default:
+          return '';
+      }
+    });
     const err = new Error('createArticle');
 
     (promises.readFile as jest.Mock).mockResolvedValue('content');
@@ -120,18 +144,23 @@ describe('blogpub', () => {
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
-          filename: 'blog-01.md',
+          filename: 'blogs/blog-01.md',
         },
       ],
     });
 
     await run();
 
+    expect(createArticle).toHaveBeenCalledWith('mediumToken', 'baseUrl', 'user', {
+      config: { title: 'New' },
+      content: 'parsed',
+    });
     expect(core.debug).toHaveBeenNthCalledWith(3, 'Uploading article New to Medium');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should upload article to medium and set medium url output', async () => {
+    (core.getInput as jest.Mock).mockReturnValueOnce('github-token');
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockReturnValue({
       config: { title: 'New' },
@@ -141,13 +170,14 @@ describe('blogpub', () => {
     octokitMock.rest.pulls.listFiles.mockResolvedValue({
       data: [
         {
-          filename: 'blog-01.md',
+          filename: 'blogs/blog-01.md',
         },
       ],
     });
 
     await run();
 
+    expect(getOctokit).toHaveBeenCalledWith('github-token');
     expect(core.getInput).toHaveBeenCalledWith('token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
