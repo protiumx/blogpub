@@ -29,6 +29,6 @@ outputs:
   devto_url:
     description: 'The Dev.to URL of the published article'
 runs:
-  using: 'node16'
+  using: 'node12'
   main: 'build/blogpub.js'
    
