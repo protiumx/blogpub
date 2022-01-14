@@ -2,29 +2,29 @@ const path = require('path');
 
 module.exports = {
   entry: ['./src/index.ts'],
-  mode: "production",
+  mode: 'production',
   module: {
     rules: [
       {
         test: /.ts$/,
         use: [
           {
-            loader: "ts-loader",
+            loader: 'ts-loader',
             options: {
-              configFile: "tsconfig.json",
-              transpileOnly: true
-            }
-          }
-        ]
-      }
-    ]
+              configFile: 'tsconfig.json',
+              transpileOnly: true,
+            },
+          },
+        ],
+      },
+    ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: ['.ts', '.js'],
   },
   output: {
-    filename: "blogpub.js",
-    path: path.resolve(__dirname, 'dist'),
+    filename: 'blogpub.js',
+    path: path.resolve(__dirname, 'build'),
   },
-  target: "node"
+  target: 'node',
 };
