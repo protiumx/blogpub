@@ -3,7 +3,8 @@ import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { promises as fs } from 'fs';
 
-import { createArticle } from '$/api/medium';
+import * as devto from '$/api/devto';
+import * as medium from '$/api/medium';
 import { parseArticle } from '$/parser';
 
 type Github = ReturnType<typeof getOctokit>;
@@ -37,16 +38,22 @@ export async function run() {
     const mediumToken = core.getInput('medium_token', { required: true });
     const mediumUserId = core.getInput('medium_user_id', { required: true });
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
+    const devtoApiKey = core.getInput('devto_api_key', { required: true });
 
     const github = getOctokit(token);
 
     const articleContent = await loadArticleContent(github, articlesFolder);
     const article = parseArticle(articleContent);
 
-    core.debug(`Uploading article ${article.config.title!} to Medium`);
-    const url = await createArticle(mediumToken, mediumBaseUrl, mediumUserId, article);
-    core.debug(`Article uploaded to Medium: ${url}`);
-    core.setOutput('medium_url', url);
+    core.debug(`Creating Medium article: "${article.config.title!}"`);
+    let publish = await medium.createArticle(mediumToken, mediumBaseUrl, mediumUserId, article);
+    core.debug(`Article uploaded to Medium: ${publish.url}`);
+    core.setOutput('medium_url', publish.url);
+
+    core.debug(`Creating Dev.To article: "${article.config.title!}"`);
+    publish = await devto.createArticle(devtoApiKey, article);
+    core.debug(`Article uploaded to Dev.To: ${publish.url}`);
+    core.setOutput('devto_url', publish.url);
   } catch (err) {
     core.setFailed(err as Error);
   }
