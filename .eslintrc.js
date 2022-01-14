@@ -26,6 +26,7 @@ module.exports = {
   ],
   ignorePatterns: ['.yarn', 'dist', 'coverage', 'jest.config.js', 'webpack.config.js'],
   rules: {
+    'eslint-comments/disable-enable-pair': 'off',
     'object-curly-spacing': [2, 'always'],
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
