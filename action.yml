@@ -5,6 +5,10 @@ branding:
   icon: 'book-open'
 description: 'Create blog posts using Medium and Dev.to APIs. Upload automatically all images.'
 inputs:
+  articles_folder:
+    description: 'Folder where articles are placed'
+    required: false
+    default: blog
   medium_token:
     description: 'Medium API Token'
     required: true
