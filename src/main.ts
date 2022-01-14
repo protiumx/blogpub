@@ -16,7 +16,7 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
     owner,
     repo,
     // https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts#L60
-    pull_number: context.issue.number,
+    pull_number: parseInt(process.env.PR as unknown as string, 10),
   });
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
   const mdFiles = files.data.filter((f) => articleFileRegex.test(f.filename));
@@ -33,14 +33,14 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
 
 export async function run() {
   try {
-    const token = core.getInput('token', { required: true });
+    const ghToken = core.getInput('gh_token', { required: true });
     const articlesFolder = core.getInput('articles_folder', { required: false });
     const mediumToken = core.getInput('medium_token', { required: true });
     const mediumUserId = core.getInput('medium_user_id', { required: true });
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
     const devtoApiKey = core.getInput('devto_api_key', { required: true });
 
-    const github = getOctokit(token);
+    const github = getOctokit(ghToken);
 
     const articleContent = await loadArticleContent(github, articlesFolder);
     const article = parseArticle(articleContent);

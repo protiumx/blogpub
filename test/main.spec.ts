@@ -28,15 +28,13 @@ jest.mock('@actions/github', () => ({
       owner: 'owner',
       repo: 'repo',
     },
-    issue: {
-      number: 10,
-    },
   },
   getOctokit: jest.fn(),
 }));
 jest.mock('@actions/core');
 
 describe('blogpub', () => {
+  process.env.PR = '10';
   beforeEach(jest.clearAllMocks);
 
   (getOctokit as jest.Mock).mockReturnValue(octokitMock);
@@ -181,7 +179,7 @@ describe('blogpub', () => {
     await run();
 
     expect(getOctokit).toHaveBeenCalledWith('github-token');
-    expect(core.getInput).toHaveBeenCalledWith('token', { required: true });
+    expect(core.getInput).toHaveBeenCalledWith('gh_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_base_url', { required: false });
