@@ -33,6 +33,7 @@ describe('dev.to client', () => {
       {
         headers: {
           'api-key': 'apiKey',
+          'Content-Type': 'application/json',
         },
       },
     );
