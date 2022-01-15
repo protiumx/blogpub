@@ -4,6 +4,10 @@ import { Article, PublishedArticle } from '$/types';
 
 const MAX_TAGS = 5;
 
+interface PostArticleResponse {
+  data: PublishedArticle;
+}
+
 export enum PublishStatus {
   Public = 'public',
   Draft = 'draft',
@@ -34,6 +38,6 @@ export async function createArticle(
         },
       },
     )
-  ).data as PublishedArticle;
-  return result;
+  ).data as PostArticleResponse;
+  return result.data;
 }
