@@ -58,6 +58,27 @@ See [blogpub-test](https://github.com/protiumx/blogpub-test) for more examples.
 - `medium_user_id`: Your Medium user ID. **Required**. See [medium api docs](https://github.com/Medium/medium-api-docs#31-users)
 - `devto_api_key`: Your Dev.to API Key. **Required**
 
+Example:
+```md
+---
+title: New Article
+description: Some description
+tags:
+  - test
+  - ci
+license: public-domain
+---
+# This is my new Article
+
+In this article we will learn how to setup with `blogpub`
+
+![ci-meme.jpg](./meme.jpg)
+
+## Requirements
+
+...
+```
+
 ## Outputs
 
 - `medium_url`: URL of the published article to Medium
