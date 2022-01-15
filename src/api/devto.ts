@@ -20,6 +20,7 @@ export async function createArticle(apiKey: string, article: Article): Promise<P
       },
       {
         headers: {
+          'Content-Type': 'application/json',
           'api-key': apiKey,
         },
       },
