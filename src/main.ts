@@ -16,7 +16,7 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
     owner,
     repo,
     // https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts#L60
-    pull_number: parseInt(process.env.PR as unknown as string, 10),
+    pull_number: parseInt(process.env.PR as string, 10),
   });
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
   const mdFiles = files.data.filter((f) => articleFileRegex.test(f.filename));
@@ -27,7 +27,10 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
 
   const newArticle = mdFiles[0];
   core.debug(`Using ${newArticle.filename}`);
-  const content = await fs.readFile(`./${newArticle.filename}`, 'utf8');
+  const content = await fs.readFile(
+    `${process.env.GITHUB_WORKSPACE as string}/${newArticle.filename}`,
+    'utf8',
+  );
   return content;
 }
 
