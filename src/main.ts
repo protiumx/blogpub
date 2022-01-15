@@ -12,22 +12,23 @@ type Github = ReturnType<typeof getOctokit>;
 async function loadArticleContent(github: Github, folderName: string): Promise<string> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
-  const files = await github.rest.pulls.listFiles({
-    owner,
-    repo,
-    // https://github.com/actions/toolkit/blob/main/packages/github/src/context.ts#L60
-    pull_number: parseInt(process.env.PR as string, 10),
-  });
+  const commit = (
+    await github.request('GET /repos/{owner}/{repo}/commits/{ref}', {
+      owner,
+      repo,
+      ref: context.sha,
+    })
+  ).data;
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
-  const mdFiles = files.data.filter((f) => articleFileRegex.test(f.filename));
+  const mdFiles = commit.files!.filter((f) => articleFileRegex.test(f.filename!));
   core.debug(`Found ${mdFiles.length} markdown files`);
   if (mdFiles.length == 0) {
     throw new Error('No markdown files found');
   }
 
   const newArticle = mdFiles[0];
-  core.debug(`Using ${newArticle.filename}`);
-  const content = await fs.readFile(`./${newArticle.filename}`, 'utf8');
+  core.debug(`Using ${newArticle.filename!}`);
+  const content = await fs.readFile(`./${newArticle.filename!}`, 'utf8');
   return content;
 }
 
