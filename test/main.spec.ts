@@ -35,7 +35,6 @@ jest.mock('@actions/core');
 
 describe('blogpub', () => {
   process.env.PR = '10';
-  process.env.GITHUB_WORKSPACE = '/home/git';
 
   beforeEach(jest.clearAllMocks);
 
@@ -92,7 +91,7 @@ describe('blogpub', () => {
     await run();
 
     expect(core.debug).toHaveBeenCalledWith('Using blogs/blog-01.md');
-    expect(promises.readFile).toHaveBeenCalledWith('/home/git/blogs/blog-01.md', 'utf8');
+    expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 

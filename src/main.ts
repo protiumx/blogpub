@@ -27,10 +27,7 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
 
   const newArticle = mdFiles[0];
   core.debug(`Using ${newArticle.filename}`);
-  const content = await fs.readFile(
-    `${process.env.GITHUB_WORKSPACE as string}/${newArticle.filename}`,
-    'utf8',
-  );
+  const content = await fs.readFile(`./${newArticle.filename}`, 'utf8');
   return content;
 }
 
