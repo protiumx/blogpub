@@ -138,7 +138,6 @@ Please submit a PR with any contribution. Refer to the list of `TODO's` or open 
 ## TODO
 
 - [ ] Test action with custom `medium` base url.
-- [ ] Support all different `publish status`
 - [ ] Remove `axios` in favor of node's `https`
 - [ ] Sanitize inputs
 - [ ] Support publishing to only 1 platform
