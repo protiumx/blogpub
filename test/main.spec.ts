@@ -1,3 +1,4 @@
+import Handlebars from 'handlebars';
 import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { promises } from 'fs';
@@ -14,6 +15,9 @@ jest.mock('fs', () => ({
   promises: {
     readFile: jest.fn(),
   },
+}));
+jest.mock('handlebars', () => ({
+  compile: jest.fn(),
 }));
 jest.mock('$/api/medium');
 jest.mock('$/api/devto');
@@ -119,6 +123,8 @@ describe('blogpub', () => {
   });
 
   it('should set failed if fails to create medium article', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -153,14 +159,19 @@ describe('blogpub', () => {
 
     await run();
 
+    expect(Handlebars.compile).toHaveBeenCalledWith('parsed');
+    expect(template).toHaveBeenCalledWith({ medium: true });
     expect(medium.createArticle).toHaveBeenCalledWith('mediumToken', 'baseUrl', 'user', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should upload article to medium and set medium url output', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockReturnValueOnce('github-token');
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockReturnValue({
@@ -190,6 +201,9 @@ describe('blogpub', () => {
   });
 
   it('should set failed if fails to create dev.to article', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -221,14 +235,19 @@ describe('blogpub', () => {
 
     await run();
 
+    expect(Handlebars.compile).toHaveBeenCalledWith('parsed');
+    expect(template).toHaveBeenCalledWith({ devto: true });
     expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should upload article to dev.to and set dev.tp url output', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -261,7 +280,7 @@ describe('blogpub', () => {
     expect(core.getInput).toHaveBeenCalledWith('devto_api_key', { required: true });
     expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
   });
