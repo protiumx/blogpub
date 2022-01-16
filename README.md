@@ -96,7 +96,7 @@ The following arguments can be set:
 - `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
 - `published`: `[boolean]`. **Default**: `true`
 
-## Templates
+## Template Support
 
 `blogpub` supports [handlebars](https://handlebarsjs.com/) templates.
 It provides the following context
