@@ -1,3 +1,4 @@
+import Handlebars from 'handlebars';
 import * as core from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { promises } from 'fs';
@@ -14,6 +15,9 @@ jest.mock('fs', () => ({
   promises: {
     readFile: jest.fn(),
   },
+}));
+jest.mock('handlebars', () => ({
+  compile: jest.fn(),
 }));
 jest.mock('$/api/medium');
 jest.mock('$/api/devto');
@@ -65,7 +69,6 @@ describe('blogpub', () => {
 
     await run();
 
-    expect(core.debug).toHaveBeenCalledWith('Found 0 markdown files');
     expect(core.setFailed).toHaveBeenCalledWith(expect.any(Error));
     const err = (core.setFailed as jest.Mock).mock.calls[0][0] as Error;
     expect(err.message).toEqual('No markdown files found');
@@ -89,7 +92,6 @@ describe('blogpub', () => {
 
     await run();
 
-    expect(core.debug).toHaveBeenCalledWith('Using blogs/blog-01.md');
     expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
@@ -121,6 +123,8 @@ describe('blogpub', () => {
   });
 
   it('should set failed if fails to create medium article', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -155,15 +159,19 @@ describe('blogpub', () => {
 
     await run();
 
+    expect(Handlebars.compile).toHaveBeenCalledWith('parsed');
+    expect(template).toHaveBeenCalledWith({ medium: true });
     expect(medium.createArticle).toHaveBeenCalledWith('mediumToken', 'baseUrl', 'user', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Creating Medium article: "New"');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should upload article to medium and set medium url output', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockReturnValueOnce('github-token');
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockReturnValue({
@@ -189,12 +197,13 @@ describe('blogpub', () => {
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_base_url', { required: false });
-
-    expect(core.debug).toHaveBeenNthCalledWith(4, 'Article uploaded to Medium: medium.com/new');
     expect(core.setOutput).toHaveBeenCalledWith('medium_url', 'medium.com/new');
   });
 
   it('should set failed if fails to create dev.to article', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -226,15 +235,19 @@ describe('blogpub', () => {
 
     await run();
 
+    expect(Handlebars.compile).toHaveBeenCalledWith('parsed');
+    expect(template).toHaveBeenCalledWith({ devto: true });
     expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(5, 'Creating Dev.To article: "New"');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
   it('should upload article to dev.to and set dev.tp url output', async () => {
+    const template = jest.fn(() => 'compiled');
+    (Handlebars.compile as jest.Mock).mockReturnValue(template);
+
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       switch (key) {
         case 'articles_folder':
@@ -267,9 +280,8 @@ describe('blogpub', () => {
     expect(core.getInput).toHaveBeenCalledWith('devto_api_key', { required: true });
     expect(devto.createArticle).toHaveBeenCalledWith('devtoApiKey', {
       config: { title: 'New' },
-      content: 'parsed',
+      content: 'compiled',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(6, 'Article uploaded to Dev.To: dev.to/new');
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
   });
 });

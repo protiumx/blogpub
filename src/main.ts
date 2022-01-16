@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import Handlebars from 'handlebars';
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { AxiosError } from 'axios';
@@ -47,13 +48,24 @@ export async function run() {
     const articleContent = await loadArticleContent(github, articlesFolder);
     const article = parseArticle(articleContent);
 
+    const template = Handlebars.compile(article.content);
+
+    /* istanbul ignore next */
     core.debug(`Creating Medium article: "${article.config.title!}"`);
+
+    /* istanbul ignore next */
+    core.debug(`Creating Medium article: "${article.config.title!}"`);
+    article.content = template({ medium: true });
     let publish = await medium.createArticle(mediumToken, mediumBaseUrl, mediumUserId, article);
+    /* istanbul ignore next */
     core.debug(`Article uploaded to Medium: ${publish.url}`);
     core.setOutput('medium_url', publish.url);
 
+    /* istanbul ignore next */
     core.debug(`Creating Dev.To article: "${article.config.title!}"`);
+    article.content = template({ devto: true });
     publish = await devto.createArticle(devtoApiKey, article);
+    /* istanbul ignore next */
     core.debug(`Article uploaded to Dev.To: ${publish.url}`);
     core.setOutput('devto_url', publish.url);
   } catch (err) {
