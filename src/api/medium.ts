@@ -18,27 +18,24 @@ export async function createArticle(
   token: string,
   baseUrl: string,
   userId: string,
-  article: Article,
+  { config, content }: Article,
 ): Promise<PublishedArticle> {
+  const payload = {
+    title: config.title,
+    contentFormat: 'markdown',
+    content: content,
+    license: config.license,
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    tags: config.tags!.split(/,\s*/).slice(0, MAX_TAGS),
+    publishStatus: config.published ? PublishStatus.Public : PublishStatus.Draft,
+  };
   const result = (
-    await axios.post(
-      `${baseUrl}/users/${userId}/posts`,
-      {
-        title: article.config.title,
-        contentFormat: 'markdown',
-        content: article.content,
-        license: article.config.license,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        tags: article.config.tags!.slice(0, MAX_TAGS),
-        publishStatus: PublishStatus.Public,
+    await axios.post(`${baseUrl}/users/${userId}/posts`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      },
-    )
+    })
   ).data as PostArticleResponse;
   return result.data;
 }
