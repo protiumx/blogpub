@@ -90,11 +90,11 @@ In this article we will learn how to setup with `blogpub`
 should be a `yml` section.
 
 The following arguments can be set:
-- `title`: [`string`] The title of the article. If not specified, the **first** H1 heading will be used.
-- `description`: [`string`] Description for `dev.to` API.
-- `tags`: [`string`] Comma separated tags. Note: Medium allows up to 5 tags whereas Dev.to only 4.
-- `license`: [`string`] Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
-- `published`: [`boolean`]. **Default**: `true`
+- `title`: `[string]` The title of the article. If not specified, the **first** H1 heading will be used.
+- `description`: `[string]` Description for `dev.to` API.
+- `tags`: `[string]` Comma separated tags. Note: Medium allows up to 5 tags whereas Dev.to only 4.
+- `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
+- `published`: `[boolean]`. **Default**: `true`
 
 ## Templates
 
