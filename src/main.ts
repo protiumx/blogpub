@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
+import { AxiosError } from 'axios';
 import { promises as fs } from 'fs';
 
 import * as devto from '$/api/devto';
@@ -57,7 +58,13 @@ export async function run() {
     core.setOutput('devto_url', publish.url);
   } catch (err) {
     /* istanbul ignore next */
-    core.debug(JSON.stringify(err));
+    {
+      const axiosErr = err as AxiosError;
+      if (axiosErr.response) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        core.debug(JSON.stringify(axiosErr.response.data));
+      }
+    }
     core.setFailed(err as Error);
   }
 }

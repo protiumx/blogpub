@@ -170,7 +170,7 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    (devto.createArticle as jest.Mock).mockRejectedValue(null);
+    (devto.createArticle as jest.Mock).mockRejectedValue(new Error(''));
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     octokitMock.request.mockResolvedValue({
       data: {
