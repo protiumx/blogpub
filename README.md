@@ -24,7 +24,7 @@ on:
     branches:
       - 'main'
     paths:
-      - 'blogs/*'
+      - 'articles/*'
 ```
 
 **Note**: we only want to trigger this action when files are added to the folder
@@ -48,7 +48,7 @@ jobs:
           medium_user_id: 1f3b633f149233c057af77f0016a9421fa520b9a59f97f5bd07201c2ca2a4a6bc
 
 ```
-See [blogpub-test](https://github.com/protiumx/blogpub-test) for more examples.
+Check [blogpub-test](https://github.com/protiumx/blogpub-test) for more examples or my personal [blog](https://github.com/protiumx/blogpub-test) source
 ## Inputs
 
 - `gh_token`: Github token. **Required**
