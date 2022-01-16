@@ -21,6 +21,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    alias: {
+      handlebars: 'handlebars/dist/handlebars.js',
+    },
   },
   output: {
     filename: 'blogpub.js',
