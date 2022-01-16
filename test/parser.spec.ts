@@ -1,4 +1,5 @@
 import { parseArticle } from '$/parser';
+import { MediumLicense } from '$/types';
 
 describe('parser', () => {
   beforeEach(jest.clearAllMocks);
@@ -36,12 +37,36 @@ some content
     const article = `
 ---
 title: Metadata Title
-
 ---
 # Main Title
 some content`;
     const parsed = parseArticle(article);
     expect(parsed.config.title).toEqual('Metadata Title');
+    expect(parsed.config.description).toEqual('');
+    expect(parsed.config.license).toEqual(MediumLicense.PublicDomain);
+    expect(parsed.config.published).toEqual(true);
+    expect(parsed.content).toEqual(`# Main Title
+some content`);
+  });
+
+  it('should parse all configuration values', () => {
+    const article = `
+---
+title: Metadata Title
+description: New Article
+tags:
+    - one
+license: ${MediumLicense.CC40Zero}
+published: false
+---
+# Main Title
+some content`;
+    const parsed = parseArticle(article);
+    expect(parsed.config.title).toEqual('Metadata Title');
+    expect(parsed.config.description).toEqual('New Article');
+    expect(parsed.config.tags).toEqual(['one']);
+    expect(parsed.config.license).toEqual(MediumLicense.CC40Zero);
+    expect(parsed.config.published).toEqual(false);
     expect(parsed.content).toEqual(`# Main Title
 some content`);
   });

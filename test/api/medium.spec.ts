@@ -8,7 +8,7 @@ jest.mock('axios');
 describe('medium client', () => {
   beforeEach(jest.clearAllMocks);
 
-  it('should create article and return new url', async () => {
+  it('should create published article and return new url', async () => {
     (axios.post as jest.Mock).mockResolvedValue({
       data: { data: { url: 'medium/new' } },
     });
@@ -16,7 +16,8 @@ describe('medium client', () => {
       config: {
         title: 'New',
         license: MediumLicense.CC40Zero,
-        tags: ['one', 'two', 'three', 'four', 'five', 'six'],
+        tags: 'one, two, three, four, five, six',
+        published: true,
       },
       content: 'Content',
     });
@@ -38,6 +39,29 @@ describe('medium client', () => {
           'Content-Type': 'application/json',
         },
       },
+    );
+    expect(published).toEqual({ url: 'medium/new' });
+  });
+
+  it('should create non published article and return new url', async () => {
+    (axios.post as jest.Mock).mockResolvedValue({
+      data: { data: { url: 'medium/new' } },
+    });
+    const published = await createArticle('token', 'medium.com', 'user', {
+      config: {
+        tags: '',
+        published: false,
+      },
+      content: 'Content',
+    });
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(axios.post).toHaveBeenCalledWith(
+      'medium.com/users/user/posts',
+      expect.objectContaining({
+        publishStatus: PublishStatus.Draft,
+      }),
+      expect.anything(),
     );
     expect(published).toEqual({ url: 'medium/new' });
   });

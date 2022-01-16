@@ -1,6 +1,6 @@
 import { load as loadYaml } from 'js-yaml';
 
-import { Article, ArticleConfig } from './types';
+import { Article, ArticleConfig, MediumLicense } from './types';
 
 function getMetadataIndexes(lines: string[]): number[] {
   const indexes: number[] = [];
@@ -42,6 +42,10 @@ export function parseArticle(content: string): Article {
     }
     config.title = title;
   }
+
+  config.description ??= '';
+  config.license ??= MediumLicense.PublicDomain;
+  config.published ??= true;
 
   return {
     config,
