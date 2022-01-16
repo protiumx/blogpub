@@ -56,6 +56,8 @@ export async function run() {
     core.debug(`Article uploaded to Dev.To: ${publish.url}`);
     core.setOutput('devto_url', publish.url);
   } catch (err) {
+    /* istanbul ignore next */
+    core.debug(JSON.stringify(err));
     core.setFailed(err as Error);
   }
 }
