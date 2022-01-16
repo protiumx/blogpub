@@ -47,13 +47,20 @@ export async function run() {
     const articleContent = await loadArticleContent(github, articlesFolder);
     const article = parseArticle(articleContent);
 
+    /* istanbul ignore next */
+    core.debug(`Creating Medium article: "${article.config.title!}"`);
+
+    /* istanbul ignore next */
     core.debug(`Creating Medium article: "${article.config.title!}"`);
     let publish = await medium.createArticle(mediumToken, mediumBaseUrl, mediumUserId, article);
+    /* istanbul ignore next */
     core.debug(`Article uploaded to Medium: ${publish.url}`);
     core.setOutput('medium_url', publish.url);
 
+    /* istanbul ignore next */
     core.debug(`Creating Dev.To article: "${article.config.title!}"`);
     publish = await devto.createArticle(devtoApiKey, article);
+    /* istanbul ignore next */
     core.debug(`Article uploaded to Dev.To: ${publish.url}`);
     core.setOutput('devto_url', publish.url);
   } catch (err) {

@@ -65,7 +65,6 @@ describe('blogpub', () => {
 
     await run();
 
-    expect(core.debug).toHaveBeenCalledWith('Found 0 markdown files');
     expect(core.setFailed).toHaveBeenCalledWith(expect.any(Error));
     const err = (core.setFailed as jest.Mock).mock.calls[0][0] as Error;
     expect(err.message).toEqual('No markdown files found');
@@ -89,7 +88,6 @@ describe('blogpub', () => {
 
     await run();
 
-    expect(core.debug).toHaveBeenCalledWith('Using blogs/blog-01.md');
     expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
@@ -159,7 +157,6 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(3, 'Creating Medium article: "New"');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
@@ -189,8 +186,6 @@ describe('blogpub', () => {
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_base_url', { required: false });
-
-    expect(core.debug).toHaveBeenNthCalledWith(4, 'Article uploaded to Medium: medium.com/new');
     expect(core.setOutput).toHaveBeenCalledWith('medium_url', 'medium.com/new');
   });
 
@@ -230,7 +225,6 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(5, 'Creating Dev.To article: "New"');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
@@ -269,7 +263,6 @@ describe('blogpub', () => {
       config: { title: 'New' },
       content: 'parsed',
     });
-    expect(core.debug).toHaveBeenNthCalledWith(6, 'Article uploaded to Dev.To: dev.to/new');
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
   });
 });
