@@ -42,22 +42,17 @@ export async function run() {
     const mediumUserId = core.getInput('medium_user_id', { required: true });
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
     const devtoApiKey = core.getInput('devto_api_key', { required: true });
-    
-    // https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
-    const GITHUB_SERVER_URL = process.env['GITHUB_SERVER_URL'] as string;
-    const GITHUB_REPOSITORY = context.repo.repo;
-    const GITHUB_REF_NAME = process.env['GITHUB_REF_NAME'] as string;
 
-    /* istanbul ignore next */
-    core.debug(`Env: ${GITHUB_SERVER_URL} - ${GITHUB_REPOSITORY} - ${GITHUB_REF_NAME}`);
-
-    const rawGithubUrl = GITHUB_SERVER_URL
+    const rawGithubUrl = context.serverUrl
       .replace('//github.com', '//raw.githubusercontent.com');
 
     const github = getOctokit(ghToken);
 
     const articleContent = await loadArticleContent(github, articlesFolder);
-    const baseUrl = `${rawGithubUrl}/${GITHUB_REPOSITORY}/${GITHUB_REF_NAME}/${articlesFolder}`;
+    const { repo, owner } = context.repo;
+    const baseUrl = `${rawGithubUrl}/${owner}/${repo}/${context.ref.replace('ref/heads/', '')}/${articlesFolder}`;
+    /* istanbul ignore next */
+    core.debug(`Base URL: ${baseUrl}`);
     const article = parseArticle(articleContent, baseUrl);
 
     const template = Handlebars.compile(article.content);
