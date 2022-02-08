@@ -63,16 +63,20 @@ Example:
 ---
 title: New Article
 description: Some description
-tags:
-  - test
-  - ci
+tags: test, ci
 license: public-domain
 ---
 # This is my new Article
 
 In this article we will learn how to setup with `blogpub`
 
-![ci-meme.jpg](./meme.jpg)
+## Relative images from the repository
+
+![ci-meme.jpg](@/assets/meme.jpg)
+
+## External Images
+
+![meme.jpg](https://sources.com/meme.jpg)
 
 ## Requirements
 
@@ -111,6 +115,17 @@ Usage:
 {{#if medium}}
 This is only for Medium
 {{/if}}
+```
+
+## Relative Images
+
+To use images contained in the same folder of the blog articles use `@` as source path. `@` will be parsed
+as the URL to the repository/<articles_folder>.
+E.g.
+```
+![image](@/img1.png)
+
+<img src="@/img2.jpg" />
 ```
 
 ## Developing
