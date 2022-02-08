@@ -24,6 +24,8 @@ jest.mock('$/api/devto');
 jest.mock('$/parser');
 jest.mock('@actions/github', () => ({
   context: {
+    serverUrl: 'https://github.com',
+    ref: 'ref/heads/main',
     repo: {
       owner: 'owner',
       repo: 'repo',
@@ -35,12 +37,6 @@ jest.mock('@actions/github', () => ({
 jest.mock('@actions/core');
 
 describe('blogpub', () => {
-  beforeAll(() => {
-    process.env['GITHUB_SERVER_URL'] = 'https://github.com';
-    process.env['GITHUB_REPOSITORY'] = 'protiumx/blogpub';
-    process.env['GITHUB_REF_NAME'] = 'main';
-  });
-
   beforeEach(jest.clearAllMocks);
 
   (getOctokit as jest.Mock).mockReturnValue(octokitMock);
@@ -289,6 +285,6 @@ describe('blogpub', () => {
     });
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
     expect(parseArticle).toHaveBeenCalledWith(
-      'content', 'https://raw.githubusercontent.com/protiumx/blogpub/main/blogs');
+      'content', 'https://raw.githubusercontent.com/owner/repo/main/blogs');
   });
 });
