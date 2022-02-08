@@ -2,6 +2,8 @@ import { load as loadYaml } from 'js-yaml';
 
 import { Article, ArticleConfig, MediumLicense } from './types';
 
+const RelativeImagesRegex = /!\[.*\]\(@\/.*\)|<img.*src=["'](@)\/.*["']/i;
+
 function getMetadataIndexes(lines: string[]): number[] {
   const indexes: number[] = [];
   for (let i = 0; i < lines.length; i++) {
@@ -26,7 +28,20 @@ function getArticleTitle(lines: string[]): string | null {
   return null;
 }
 
-export function parseArticle(content: string): Article {
+function parseRelativeImages(lines: string[], baseUrl: string) {
+  for (let i = 0; i < lines.length; i++) {
+    if (RelativeImagesRegex.test(lines[i])) {
+      lines[i] = lines[i].replace('@', baseUrl);
+    }
+  }
+}
+
+/*
+ * Parses an article into an Article object.
+ *
+ * It loads the metadata and parses all the images with `@` relative path.
+ */
+export function parseArticle(content: string, baseUrl: string): Article {
   const lines = content.split('\n');
   const metadataIndexes = getMetadataIndexes(lines);
   if (metadataIndexes.length !== 2) {
@@ -43,6 +58,7 @@ export function parseArticle(content: string): Article {
     config.title = title;
   }
 
+  parseRelativeImages(contentLines, baseUrl);
   config.description ??= '';
   config.license ??= MediumLicense.PublicDomain;
   config.published ??= true;
