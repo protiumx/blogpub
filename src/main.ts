@@ -45,8 +45,11 @@ export async function run() {
     
     // https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
     const GITHUB_SERVER_URL = process.env['GITHUB_SERVER_URL'] as string;
-    const GITHUB_REPOSITORY = process.env['GITHUB_REPOSITORY'] as string;
+    const GITHUB_REPOSITORY = context.repo.repo;
     const GITHUB_REF_NAME = process.env['GITHUB_REF_NAME'] as string;
+
+    /* istanbul ignore next */
+    core.debug(`Env: ${GITHUB_SERVER_URL} - ${GITHUB_REPOSITORY} - ${GITHUB_REF_NAME}`);
 
     const rawGithubUrl = GITHUB_SERVER_URL
       .replace('//github.com', '//raw.githubusercontent.com');

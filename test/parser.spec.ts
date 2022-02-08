@@ -89,7 +89,6 @@ some content
 ## Description
 `;
     const parsed = parseArticle(article, 'https://raw.github.com/protiumx/blogpub/main/articles');
-    console.info(parsed.content);
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
