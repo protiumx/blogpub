@@ -50,7 +50,7 @@ export async function run() {
 
     const articleContent = await loadArticleContent(github, articlesFolder);
     const { repo, owner } = context.repo;
-    const baseUrl = `${rawGithubUrl}/${owner}/${repo}/${context.ref.replace('ref/heads/', '')}/${articlesFolder}`;
+    const baseUrl = `${rawGithubUrl}/${owner}/${repo}/${context.ref.replace('refs/heads/', '')}/${articlesFolder}`;
     /* istanbul ignore next */
     core.debug(`Base URL: ${baseUrl}`);
     const article = parseArticle(articleContent, baseUrl);

@@ -25,7 +25,7 @@ jest.mock('$/parser');
 jest.mock('@actions/github', () => ({
   context: {
     serverUrl: 'https://github.com',
-    ref: 'ref/heads/main',
+    ref: 'refs/heads/main',
     repo: {
       owner: 'owner',
       repo: 'repo',
