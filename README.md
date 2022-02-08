@@ -119,13 +119,19 @@ This is only for Medium
 
 ## Relative Images
 
-To use images contained in the same folder of the blog articles use `@` as source path. `@` will be parsed
-as the URL to the repository/<articles_folder>.
-E.g.
+To use images contained in the same folder of the blog articles use `@/<image_path>`. 
+`@` refers to `https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>`
+
+Example:
 ```
 ![image](@/img1.png)
-
 <img src="@/img2.jpg" />
+```
+
+Will be parsed as
+```
+![image](https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>/img1.png)
+<img src="https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>/img2.jpg" />
 ```
 
 ## Developing
@@ -158,4 +164,4 @@ Please submit a PR with any contribution. Refer to the list of `TODO's` or open 
 - [ ] Support publishing to only 1 platform
 - [ ] Support edition and auto update of articles
 - [ ] Support multiple articles
-- [ ] Upload relative images
+- [x] Relative images to github raw server
