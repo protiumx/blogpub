@@ -5,19 +5,18 @@ describe('parser', () => {
   beforeEach(jest.clearAllMocks);
 
   it('should error when article does not contain metadata', () => {
-    expect(parseArticle.bind(null, '')).toThrowError('Incorrect metadata');
+    expect(parseArticle.bind(null, '', '')).toThrowError('Incorrect metadata');
   });
 
   it('should error when article does not contain a title', () => {
     const article = `
 ---
-tags:
-  - tagOne
+tags: tagOne
 ---
 ## some sub title
 some content
 `;
-    expect(parseArticle.bind(null, article)).toThrowError('Article does not have a title');
+    expect(parseArticle.bind(null, article, '')).toThrowError('Article does not have a title');
   });
 
   it('should get title from article content', () => {
@@ -29,7 +28,7 @@ tags:
 # Main Title
 some content
 `;
-    const parsed = parseArticle(article);
+    const parsed = parseArticle(article, '');
     expect(parsed.config.title).toEqual('Main Title');
   });
 
@@ -40,7 +39,7 @@ title: Metadata Title
 ---
 # Main Title
 some content`;
-    const parsed = parseArticle(article);
+    const parsed = parseArticle(article, '');
     expect(parsed.config.title).toEqual('Metadata Title');
     expect(parsed.config.description).toEqual('');
     expect(parsed.config.license).toEqual(MediumLicense.PublicDomain);
@@ -54,20 +53,50 @@ some content`);
 ---
 title: Metadata Title
 description: New Article
-tags:
-    - one
+tags: one, two
 license: ${MediumLicense.CC40Zero}
 published: false
 ---
 # Main Title
 some content`;
-    const parsed = parseArticle(article);
+    const parsed = parseArticle(article, '');
     expect(parsed.config.title).toEqual('Metadata Title');
     expect(parsed.config.description).toEqual('New Article');
-    expect(parsed.config.tags).toEqual(['one']);
+    expect(parsed.config.tags).toEqual('one, two');
     expect(parsed.config.license).toEqual(MediumLicense.CC40Zero);
     expect(parsed.config.published).toEqual(false);
     expect(parsed.content).toEqual(`# Main Title
 some content`);
+  });
+
+
+  it('should parse all images with relative path', () => {
+    const article = `
+---
+title: Some Title
+description: New Article
+tags: one, images
+published: false
+---
+
+# Main Title
+some content
+
+![img](@/assets/img.png)
+
+<img alt="image" src="@/assets/img.jpg" />
+
+## Description
+`;
+    const parsed = parseArticle(article, 'https://raw.github.com/protiumx/blogpub/main/articles');
+    console.info(parsed.content);
+    expect(
+      parsed.content.includes(
+        '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
+      )).toBeTruthy();
+    expect(
+      parsed.content.includes(
+        '<img alt="image" src="https://raw.github.com/protiumx/blogpub/main/articles/assets/img.jpg"',
+      )).toBeTruthy();
   });
 });
