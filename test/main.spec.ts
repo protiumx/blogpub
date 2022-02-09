@@ -24,8 +24,6 @@ jest.mock('$/api/devto');
 jest.mock('$/parser');
 jest.mock('@actions/github', () => ({
   context: {
-    serverUrl: 'https://github.com',
-    ref: 'refs/heads/main',
     repo: {
       owner: 'owner',
       repo: 'repo',
@@ -40,6 +38,17 @@ describe('blogpub', () => {
   beforeEach(jest.clearAllMocks);
 
   (getOctokit as jest.Mock).mockReturnValue(octokitMock);
+
+  const fileData = {
+      data: {
+        files: [
+          {
+            filename: 'blogs/blog-01.md',
+            raw_url: 'https://raw.githubusercontent.com/owner/repo/main/blogs/blog-01.md',
+          },
+        ],
+      },
+    };
 
   it('should set failed when fails to get PR info', async () => {
     const err = new Error('github');
@@ -82,15 +91,7 @@ describe('blogpub', () => {
     });
     const err = new Error('fs');
     (promises.readFile as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -109,15 +110,7 @@ describe('blogpub', () => {
     (parseArticle as jest.Mock).mockImplementation(() => {
       throw err;
     });
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -149,15 +142,7 @@ describe('blogpub', () => {
       content: 'parsed',
     });
     (medium.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -182,15 +167,7 @@ describe('blogpub', () => {
     });
     (devto.createArticle as jest.Mock).mockRejectedValue(new Error(''));
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -225,15 +202,7 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -266,15 +235,7 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockResolvedValue({ url: 'dev.to/new' });
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    });
+    octokitMock.request.mockResolvedValue(fileData);
 
     await run();
 
@@ -285,6 +246,6 @@ describe('blogpub', () => {
     });
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
     expect(parseArticle).toHaveBeenCalledWith(
-      'content', 'https://raw.githubusercontent.com/owner/repo/main/blogs');
+      'content', 'https://raw.githubusercontent.com/owner/repo/main/blogs/');
   });
 });
