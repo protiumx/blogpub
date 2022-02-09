@@ -70,13 +70,9 @@ license: public-domain
 
 In this article we will learn how to setup with `blogpub`
 
-## Relative images from the repository
+## Relative paths from the repository
 
-![ci-meme.jpg](@/assets/meme.jpg)
-
-## External Images
-
-![meme.jpg](https://sources.com/meme.jpg)
+![ci-meme.jpg](./assets/meme.jpg)
 
 ## Requirements
 
@@ -117,21 +113,22 @@ This is only for Medium
 {{/if}}
 ```
 
-## Relative Images
+## Relative Paths
 
-To use images contained in the same folder of the blog articles use `@/<image_path>`. 
-`@` refers to `https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>`
+To use any media contained in your repository you can use relative paths. 
+All relative paths will be resolved using the raw url of the markdown down file that 
+is being processed.
 
 Example:
 ```
-![image](@/img1.png)
-<img src="@/img2.jpg" />
+![image](./img1.png)
+<img src="../assets/img2.jpg" />
 ```
 
 Will be parsed as
 ```
 ![image](https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>/img1.png)
-<img src="https://raw.githubusercontent.com/<owner>/<repo>/<articles_folder>/img2.jpg" />
+<img src="https://raw.githubusercontent.com/<owner>/<repo>/assets/img2.jpg" />
 ```
 
 ## Developing
@@ -164,4 +161,4 @@ Please submit a PR with any contribution. Refer to the list of `TODO's` or open 
 - [ ] Support publishing to only 1 platform
 - [ ] Support edition and auto update of articles
 - [ ] Support multiple articles
-- [x] Relative images to github raw server
+- [x] Relative paths to github raw server

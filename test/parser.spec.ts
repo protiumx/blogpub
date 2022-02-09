@@ -82,20 +82,25 @@ published: false
 # Main Title
 some content
 
-![img](@/assets/img.png)
+![img](./assets/img.png)
+![img](../global/img.png)
 
-<img alt="image" src="@/assets/img.jpg" />
+<img alt="image" src="./assets/img.gif" />
 
 ## Description
 `;
-    const parsed = parseArticle(article, 'https://raw.github.com/protiumx/blogpub/main/articles');
+    const parsed = parseArticle(article, 'https://raw.github.com/protiumx/blogpub/main/articles/');
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
       )).toBeTruthy();
     expect(
       parsed.content.includes(
-        '<img alt="image" src="https://raw.github.com/protiumx/blogpub/main/articles/assets/img.jpg"',
+        '![img](https://raw.github.com/protiumx/blogpub/main/articles/global/img.png)',
+      )).toBeTruthy();
+    expect(
+      parsed.content.includes(
+        '<img alt="image" src="https://raw.github.com/protiumx/blogpub/main/articles/assets/img.gif"',
       )).toBeTruthy();
   });
 });

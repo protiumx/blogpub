@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import Handlebars from 'handlebars';
+import path from 'path';
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
 import { AxiosError } from 'axios';
@@ -11,7 +12,9 @@ import { parseArticle } from '$/parser';
 
 type Github = ReturnType<typeof getOctokit>;
 
-async function loadArticleContent(github: Github, folderName: string): Promise<string> {
+async function loadArticleFile(
+  github: Github, folderName: string,
+): Promise<{ rawUrl: string, content: string}> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
   const commit = (
@@ -31,7 +34,7 @@ async function loadArticleContent(github: Github, folderName: string): Promise<s
   const newArticle = mdFiles[0];
   core.debug(`Using ${newArticle.filename!}`);
   const content = await fs.readFile(`./${newArticle.filename!}`, 'utf8');
-  return content;
+  return { rawUrl: newArticle.raw_url!, content };
 }
 
 export async function run() {
@@ -43,18 +46,13 @@ export async function run() {
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
     const devtoApiKey = core.getInput('devto_api_key', { required: true });
 
-    const rawGithubUrl = context.serverUrl
-      .replace('//github.com', '//raw.githubusercontent.com');
-
     const github = getOctokit(ghToken);
 
-    const articleContent = await loadArticleContent(github, articlesFolder);
-    const { repo, owner } = context.repo;
-    const baseUrl = `${rawGithubUrl}/${owner}/${repo}/${context.ref.replace('refs/heads/', '')}/${articlesFolder}`;
+    const articleFile = await loadArticleFile(github, articlesFolder);
+    const baseUrl = path.dirname(articleFile.rawUrl);
     /* istanbul ignore next */
     core.debug(`Base URL: ${baseUrl}`);
-    const article = parseArticle(articleContent, baseUrl);
-
+    const article = parseArticle(articleFile.content, `${baseUrl}/`);
     const template = Handlebars.compile(article.content);
 
     /* istanbul ignore next */

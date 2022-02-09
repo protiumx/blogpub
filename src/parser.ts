@@ -2,7 +2,7 @@ import { load as loadYaml } from 'js-yaml';
 
 import { Article, ArticleConfig, MediumLicense } from './types';
 
-const RelativeImagesRegex = /!\[.*\]\(@\/.*\)|<img.*src=["'](@)\/.*["']/i;
+const RelativePathRegex = /[\.]{1,2}\//;
 
 function getMetadataIndexes(lines: string[]): number[] {
   const indexes: number[] = [];
@@ -30,8 +30,8 @@ function getArticleTitle(lines: string[]): string | null {
 
 function parseRelativeImages(lines: string[], baseUrl: string) {
   for (let i = 0; i < lines.length; i++) {
-    if (RelativeImagesRegex.test(lines[i])) {
-      lines[i] = lines[i].replace('@', baseUrl);
+    if (RelativePathRegex.test(lines[i])) {
+      lines[i] = lines[i].replace(RelativePathRegex, baseUrl);
     }
   }
 }
