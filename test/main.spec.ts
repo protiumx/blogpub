@@ -24,6 +24,8 @@ jest.mock('$/api/devto');
 jest.mock('$/parser');
 jest.mock('@actions/github', () => ({
   context: {
+    serverUrl: 'https://github.com',
+    ref: 'refs/heads/main',
     repo: {
       owner: 'owner',
       repo: 'repo',
@@ -44,7 +46,6 @@ describe('blogpub', () => {
         files: [
           {
             filename: 'blogs/blog-01.md',
-            raw_url: 'https://raw.githubusercontent.com/owner/repo/main/blogs/blog-01.md',
           },
         ],
       },
