@@ -14,7 +14,7 @@ type Github = ReturnType<typeof getOctokit>;
 
 async function loadArticleFile(
   github: Github, folderName: string,
-): Promise<{ rawUrl: string, content: string}> {
+): Promise<{ fileName: string, content: string}> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
   const commit = (
@@ -34,7 +34,7 @@ async function loadArticleFile(
   const newArticle = mdFiles[0];
   core.debug(`Using ${newArticle.filename!}`);
   const content = await fs.readFile(`./${newArticle.filename!}`, 'utf8');
-  return { rawUrl: newArticle.raw_url!, content };
+  return { fileName: newArticle.filename!, content };
 }
 
 export async function run() {
@@ -49,7 +49,12 @@ export async function run() {
     const github = getOctokit(ghToken);
 
     const articleFile = await loadArticleFile(github, articlesFolder);
-    const baseUrl = path.dirname(articleFile.rawUrl);
+    const rawGithubUrl = context.serverUrl
+      .replace('//github.com', '//raw.githubusercontent.com');
+    const { repo, owner } = context.repo;
+    const branchName = context.ref.replace('refs/heads/', '');
+    const fileUrl = `${rawGithubUrl}/${owner}/${repo}/${branchName}/${articleFile.fileName}`;
+    const baseUrl = path.dirname(fileUrl);
     /* istanbul ignore next */
     core.debug(`Base URL: ${baseUrl}`);
     const article = parseArticle(articleFile.content, `${baseUrl}/`);
