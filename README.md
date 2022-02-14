@@ -40,7 +40,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: blogpub
-        uses: protiumx/blogpub@v0.1.8
+        uses: protiumx/blogpub@v0.4.1
         with:
           devto_api_key: ${{ secrets.DEVTO_API_KEY }}
           gh_token: ${{ secrets.GH_TOKEN }}
