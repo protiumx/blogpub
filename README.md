@@ -155,10 +155,11 @@ Please submit a PR with any contribution. Refer to the list of `TODO's` or open 
 
 ## TODO
 
+- [x] Relative paths to github raw server
 - [ ] Test action with custom `medium` base url.
 - [ ] Remove `axios` in favor of node's `https`
 - [ ] Sanitize inputs
 - [ ] Support publishing to only 1 platform
 - [ ] Support edition and auto update of articles
-- [ ] Support multiple articles
-- [x] Relative paths to github raw server
+- [ ] Support multiple articles per job run
+- [ ] Support `cover_image` for dev.to API with relative path
