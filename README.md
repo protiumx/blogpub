@@ -95,6 +95,7 @@ The following arguments can be set:
 - `tags`: `[string]` Comma separated tags. Note: Medium allows up to 5 tags whereas Dev.to only 4.
 - `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
 - `published`: `[boolean]`. **Default**: `true`
+- `cover_image`: `[string]` Dev.to cover image
 
 ## Template Support
 
