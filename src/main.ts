@@ -54,17 +54,15 @@ export async function run() {
     const { repo, owner } = context.repo;
     const branchName = context.ref.replace('refs/heads/', '');
     const fileUrl = `${rawGithubUrl}/${owner}/${repo}/${branchName}/${articleFile.fileName}`;
-    const baseUrl = path.dirname(fileUrl);
+    const basePath = path.dirname(fileUrl).replace('https://', '');
     /* istanbul ignore next */
-    core.debug(`Base URL: ${baseUrl}`);
-    const article = parseArticle(articleFile.content, `${baseUrl}/`);
+    core.debug(`Base path: ${basePath}`);
+    const article = parseArticle(articleFile.content, `${basePath}/`);
     const template = Handlebars.compile(article.content);
 
     /* istanbul ignore next */
     core.debug(`Creating Medium article: "${article.config.title!}"`);
 
-    /* istanbul ignore next */
-    core.debug(`Creating Medium article: "${article.config.title!}"`);
     article.content = template({ medium: true });
     let publish = await medium.createArticle(mediumToken, mediumBaseUrl, mediumUserId, article);
     /* istanbul ignore next */

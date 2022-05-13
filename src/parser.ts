@@ -1,8 +1,9 @@
+import path from 'path';
 import { load as loadYaml } from 'js-yaml';
 
 import { Article, ArticleConfig, MediumLicense } from './types';
 
-const RelativePathRegex = /[\.]{1,2}\//;
+const RelativePathRegex = /([\.]{1,2}\/.*)/;
 
 function getMetadataIndexes(lines: string[]): number[] {
   const indexes: number[] = [];
@@ -28,20 +29,20 @@ function getArticleTitle(lines: string[]): string | null {
   return null;
 }
 
-function parseRelativeImages(lines: string[], baseUrl: string) {
+function parseRelativeImages(lines: string[], basePath: string) {
   for (let i = 0; i < lines.length; i++) {
-    if (RelativePathRegex.test(lines[i])) {
-      lines[i] = lines[i].replace(RelativePathRegex, baseUrl);
+    const match = lines[i].match(RelativePathRegex);
+    if (match !== null) {
+      const absolutePath = path.join(basePath, match[1]);
+      lines[i] = lines[i].replace(match[1], `https://${absolutePath}`);
     }
   }
 }
 
-/*
- * Parses an article into an Article object.
- *
- * It loads the metadata and parses all the images with `@` relative path.
+/* 
+ * Parses the content and configuration, replacing relative paths with full raw content github url.
  */
-export function parseArticle(content: string, baseUrl: string): Article {
+export function parseArticle(content: string, basePath: string): Article {
   const lines = content.split('\n');
   const metadataIndexes = getMetadataIndexes(lines);
   if (metadataIndexes.length !== 2) {
@@ -49,7 +50,9 @@ export function parseArticle(content: string, baseUrl: string): Article {
   }
   const metadata = lines.slice(metadataIndexes[0] + 1, metadataIndexes[1]);
   const contentLines = lines.slice(metadataIndexes[1] + 1);
+  parseRelativeImages(metadata, basePath);
   const config = loadYaml(metadata.join('\n')) as ArticleConfig;
+
   if (!config.title) {
     const title = getArticleTitle(contentLines);
     if (title === null) {
@@ -58,7 +61,7 @@ export function parseArticle(content: string, baseUrl: string): Article {
     config.title = title;
   }
 
-  parseRelativeImages(contentLines, baseUrl);
+  parseRelativeImages(contentLines, basePath);
   config.description ??= '';
   config.license ??= MediumLicense.PublicDomain;
   config.published ??= true;

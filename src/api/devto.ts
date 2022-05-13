@@ -10,12 +10,13 @@ export async function createArticle(
 ): Promise<PublishedArticle> {
   const payload = {
     article: {
-      title: config.title,
       body_markdown: content,
+      cover_image: config.cover_image,
+      description: config.description,
       published: config.published,
+      title: config.title,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       tags: config.tags!.split(/,\s*/).slice(0, MAX_TAGS),
-      description: config.description,
     },
   };
   const result = (
