@@ -74,6 +74,7 @@ some content`);
     const article = `
 ---
 title: Some Title
+cover_image: ./cover.jpg
 description: New Article
 tags: one, images
 published: false
@@ -89,14 +90,15 @@ some content
 
 ## Description
 `;
-    const parsed = parseArticle(article, 'https://raw.github.com/protiumx/blogpub/main/articles/');
+    const parsed = parseArticle(article, 'raw.github.com/protiumx/blogpub/main/articles/');
+    expect(parsed.config.cover_image).toEqual('https://raw.github.com/protiumx/blogpub/main/articles/cover.jpg');
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
       )).toBeTruthy();
     expect(
       parsed.content.includes(
-        '![img](https://raw.github.com/protiumx/blogpub/main/articles/global/img.png)',
+        '![img](https://raw.github.com/protiumx/blogpub/main/global/img.png)',
       )).toBeTruthy();
     expect(
       parsed.content.includes(

@@ -247,6 +247,6 @@ describe('blogpub', () => {
     });
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
     expect(parseArticle).toHaveBeenCalledWith(
-      'content', 'https://raw.githubusercontent.com/owner/repo/main/blogs/');
+      'content', 'raw.githubusercontent.com/owner/repo/main/blogs/');
   });
 });

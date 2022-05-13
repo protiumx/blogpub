@@ -11,12 +11,13 @@ export enum MediumLicense {
 }
 
 export interface ArticleConfig {
+  cover_image?: string;
   description?: string;
+  license?: MediumLicense;
+  published?: boolean;
   title?: string;
   // Comma separated tags
   tags?: string;
-  license?: MediumLicense;
-  published?: boolean;
 }
 
 export interface Article {
