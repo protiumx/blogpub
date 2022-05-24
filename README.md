@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/protiumx/blogpub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/protiumx/blogpub/actions/workflows/ci.yml)
 
-Github action to publish your blog articles to Medium or Dev.to
+Github action to publish your blog articles to [Medium](https://medium.com/) or [Dev.to](http://dev.to/)
 
 ## Pre-requisites
 
@@ -40,7 +40,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: blogpub
-        uses: protiumx/blogpub@v0.4.1
+        uses: protiumx/blogpub@v0.6.0
         with:
           devto_api_key: ${{ secrets.DEVTO_API_KEY }}
           gh_token: ${{ secrets.GH_TOKEN }}
@@ -92,7 +92,7 @@ should be a `yml` section.
 The following arguments can be set:
 - `title`: `[string]` The title of the article. If not specified, the **first** H1 heading will be used.
 - `description`: `[string]` Description for `dev.to` API.
-- `tags`: `[string]` Comma separated tags. Note: Medium allows up to 5 tags whereas Dev.to only 4.
+- `tags`: `[string | string[]]` Comma separated tags or yaml list. Note: Medium allows up to 5 tags whereas Dev.to only 4.
 - `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
 - `published`: `[boolean]`. **Default**: `true`
 - `cover_image`: `[string]` Dev.to cover image

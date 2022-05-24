@@ -61,6 +61,10 @@ export function parseArticle(content: string, basePath: string): Article {
     config.title = title;
   }
 
+  if (typeof config.tags === 'string') {
+    config.tags = config.tags.split(/,\s*/);
+  }
+
   parseRelativeImages(contentLines, basePath);
   config.description ??= '';
   config.license ??= MediumLicense.PublicDomain;

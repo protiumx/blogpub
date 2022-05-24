@@ -25,8 +25,7 @@ export async function createArticle(
     contentFormat: 'markdown',
     content: content,
     license: config.license,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    tags: config.tags!.split(/,\s*/).slice(0, MAX_TAGS),
+    tags: (config.tags as string[]).slice(0, MAX_TAGS),
     publishStatus: config.published ? PublishStatus.Public : PublishStatus.Draft,
   };
   const result = (

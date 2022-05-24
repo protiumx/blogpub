@@ -16,8 +16,8 @@ export interface ArticleConfig {
   license?: MediumLicense;
   published?: boolean;
   title?: string;
-  // Comma separated tags
-  tags?: string;
+  // Comma separated tags or a yaml list
+  tags?: string | string[];
 }
 
 export interface Article {

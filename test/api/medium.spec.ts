@@ -16,7 +16,7 @@ describe('medium client', () => {
       config: {
         title: 'New',
         license: MediumLicense.CC40Zero,
-        tags: 'one, two, three, four, five, six',
+        tags: ['one', 'two', 'three', 'four', 'five', 'six'],
         published: true,
       },
       content: 'Content',
