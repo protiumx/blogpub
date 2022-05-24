@@ -12,7 +12,7 @@ describe('dev.to client', () => {
     const published = await createArticle('apiKey', {
       config: {
         title: 'New',
-        tags: 'one, two, three, four, five, six',
+        tags: ['one', 'two', 'three', 'four', 'five', 'six'],
         description: 'description',
         published: false,
       },
