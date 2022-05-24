@@ -62,7 +62,7 @@ some content`;
     const parsed = parseArticle(article, '');
     expect(parsed.config.title).toEqual('Metadata Title');
     expect(parsed.config.description).toEqual('New Article');
-    expect(parsed.config.tags).toEqual('one, two');
+    expect(parsed.config.tags).toEqual(['one', 'two']);
     expect(parsed.config.license).toEqual(MediumLicense.CC40Zero);
     expect(parsed.config.published).toEqual(false);
     expect(parsed.content).toEqual(`# Main Title
@@ -76,7 +76,9 @@ some content`);
 title: Some Title
 cover_image: ./cover.jpg
 description: New Article
-tags: one, images
+tags:
+  - one
+  - images
 published: false
 ---
 
@@ -92,6 +94,7 @@ some content
 `;
     const parsed = parseArticle(article, 'raw.github.com/protiumx/blogpub/main/articles/');
     expect(parsed.config.cover_image).toEqual('https://raw.github.com/protiumx/blogpub/main/articles/cover.jpg');
+    expect(parsed.config.tags).toEqual(['one', 'images']);
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
