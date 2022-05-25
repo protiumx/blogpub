@@ -2,7 +2,10 @@
 
 [![CI](https://github.com/protiumx/blogpub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/protiumx/blogpub/actions/workflows/ci.yml)
 
-Github action to publish your blog articles to [Medium](https://medium.com/) or [Dev.to](http://dev.to/)
+Github action to publish your blog articles to [Medium](https://medium.com/) or [Dev.to](http://dev.to/).
+It gets the files from a `push` event and process the first `md` file that find.
+**The file is ignored if it already existed before the push event.** 
+This avoid publishing again when making fixes on an existing article.
 
 ## Pre-requisites
 
