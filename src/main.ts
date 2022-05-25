@@ -3,7 +3,7 @@ import Handlebars from 'handlebars';
 import path from 'path';
 import * as core from '@actions/core';
 import { context, getOctokit } from '@actions/github';
-import { PushEvent } from '@octokit/webhooks-definitions/schema'
+import { PushEvent } from '@octokit/webhooks-definitions/schema';
 import { AxiosError } from 'axios';
 import { promises as fs } from 'fs';
 
