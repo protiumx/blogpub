@@ -36,20 +36,26 @@ jest.mock('@actions/github', () => ({
 }));
 jest.mock('@actions/core');
 
+process.env.GITHUB_EVENT_PATH = 'event.json';
+jest.mock('event.json', () => ({
+  // __esModule: true,
+  default: { before: 'sha' },
+}), { virtual: true });
+
 describe('blogpub', () => {
   beforeEach(jest.clearAllMocks);
 
   (getOctokit as jest.Mock).mockReturnValue(octokitMock);
 
   const fileData = {
-      data: {
-        files: [
-          {
-            filename: 'blogs/blog-01.md',
-          },
-        ],
-      },
-    };
+    data: {
+      files: [
+        {
+          filename: 'blogs/blog-01.md',
+        },
+      ],
+    },
+  };
 
   it('should set failed when fails to get PR info', async () => {
     const err = new Error('github');
@@ -99,8 +105,26 @@ describe('blogpub', () => {
     expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
+  
+  it('should skip if file already exists in repository', async () => {
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      return key === 'articles_folder' ? 'blogs' : '';
+    });
+    octokitMock.request.mockResolvedValue({
+      data: {
+        files: [
+          {
+            filename: 'readme.txt',
+          },
+        ],
+      },
+    });
+    octokitMock.request.mockResolvedValueOnce({ status: 200 });
+    await run();
+    expect(parseArticle).not.toHaveBeenCalled();
+  });
 
-  it('should set failed if fails to parse article', async () => {
+  it('should set failed if fails to parse file into article', async () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
@@ -111,7 +135,8 @@ describe('blogpub', () => {
     (parseArticle as jest.Mock).mockImplementation(() => {
       throw err;
     });
-    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.request.mockResolvedValueOnce(fileData);
+    octokitMock.request.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -143,7 +168,8 @@ describe('blogpub', () => {
       content: 'parsed',
     });
     (medium.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.request.mockResolvedValueOnce(fileData);
+    octokitMock.request.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -168,7 +194,8 @@ describe('blogpub', () => {
     });
     (devto.createArticle as jest.Mock).mockRejectedValue(new Error(''));
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
-    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.request.mockResolvedValueOnce(fileData);
+    octokitMock.request.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -203,7 +230,8 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.request.mockResolvedValueOnce(fileData);
+    octokitMock.request.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -236,7 +264,8 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockResolvedValue({ url: 'dev.to/new' });
-    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.request.mockResolvedValueOnce(fileData);
+    octokitMock.request.mockResolvedValueOnce({ status: 404 });
 
     await run();
 

@@ -14,7 +14,7 @@ type Github = ReturnType<typeof getOctokit>;
 
 async function loadArticleFile(
   github: Github, folderName: string,
-): Promise<{ fileName: string, content: string}> {
+): Promise<{ fileName: string, content: string }> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
   const commit = (
@@ -37,6 +37,19 @@ async function loadArticleFile(
   return { fileName: newArticle.filename!, content };
 }
 
+// Check if file already existed in a commit
+async function checkFileExists(github: Github, filePath: string, ref: string): Promise<boolean> {
+  const { owner, repo } = context.repo;
+  const res = await github.request('GET /repos/{owner}/{repo}/contents/{path}/{?ref}', {
+    owner,
+    repo,
+    ref,
+    path: filePath,
+  });
+  return res.status === 200;
+}
+
+
 export async function run() {
   try {
     const ghToken = core.getInput('gh_token', { required: true });
@@ -45,10 +58,20 @@ export async function run() {
     const mediumUserId = core.getInput('medium_user_id', { required: true });
     const mediumBaseUrl = core.getInput('medium_base_url', { required: false });
     const devtoApiKey = core.getInput('devto_api_key', { required: true });
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
+    const eventPayload = require(process.env.GITHUB_EVENT_PATH as string);
 
     const github = getOctokit(ghToken);
 
     const articleFile = await loadArticleFile(github, articlesFolder);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+    const articleAlreadyExists = await checkFileExists(github, articleFile.fileName, eventPayload.before);
+    /* istanbul ignore next */
+    if (articleAlreadyExists) {
+      /* istanbul ignore next */
+      core.debug(`Article ${articleFile.fileName} already published. Skipping.`);      
+      return;
+    }
     const rawGithubUrl = context.serverUrl
       .replace('//github.com', '//raw.githubusercontent.com');
     const { repo, owner } = context.repo;
