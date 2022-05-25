@@ -30,17 +30,15 @@ jest.mock('@actions/github', () => ({
       owner: 'owner',
       repo: 'repo',
     },
+    payload: {
+      before: 'sha'
+    },
     sha: '1234',
   },
   getOctokit: jest.fn(),
 }));
 jest.mock('@actions/core');
 
-process.env.GITHUB_EVENT_PATH = 'event.json';
-jest.mock('event.json', () => ({
-  // __esModule: true,
-  default: { before: 'sha' },
-}), { virtual: true });
 
 describe('blogpub', () => {
   beforeEach(jest.clearAllMocks);

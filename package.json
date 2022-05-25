@@ -17,6 +17,7 @@
   "devDependencies": {
     "#": "link:./test",
     "$": "link:./src",
+    "@octokit/webhooks-definitions": "^3.67.3",
     "@types/jest": "^27.4.0",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "^17.0.8",
