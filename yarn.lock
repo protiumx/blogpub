@@ -860,6 +860,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/webhooks-definitions@npm:^3.67.3":
+  version: 3.68.1
+  resolution: "@octokit/webhooks-definitions@npm:3.68.1"
+  checksum: ce479223ab11235c5f59e40bb8ef4fdbc161afd77de0def540d3ce4dc25f2d5beddf159fcee6a585e4aa064ae2f69ae5c87826f6a2a38dc576a175d6a2f76a75
+  languageName: node
+  linkType: hard
+
 "@sinonjs/commons@npm:^1.7.0":
   version: 1.8.3
   resolution: "@sinonjs/commons@npm:1.8.3"
@@ -1725,6 +1732,7 @@ __metadata:
     $: "link:./src"
     "@actions/core": ^1.6.0
     "@actions/github": ^5.0.0
+    "@octokit/webhooks-definitions": ^3.67.3
     "@types/jest": ^27.4.0
     "@types/js-yaml": ^4.0.5
     "@types/node": ^17.0.8

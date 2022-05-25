@@ -39,6 +39,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["$", "link:./src::locator=blogpub%40workspace%3A."],
             ["@actions/core", "npm:1.6.0"],
             ["@actions/github", "npm:5.0.0"],
+            ["@octokit/webhooks-definitions", "npm:3.68.1"],
             ["@types/jest", "npm:27.4.0"],
             ["@types/js-yaml", "npm:4.0.5"],
             ["@types/node", "npm:17.0.8"],
@@ -1372,6 +1373,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@octokit/webhooks-definitions", [
+        ["npm:3.68.1", {
+          "packageLocation": "./.yarn/cache/@octokit-webhooks-definitions-npm-3.68.1-b48c2c8738-ce479223ab.zip/node_modules/@octokit/webhooks-definitions/",
+          "packageDependencies": [
+            ["@octokit/webhooks-definitions", "npm:3.68.1"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["@sinonjs/commons", [
         ["npm:1.8.3", {
           "packageLocation": "./.yarn/cache/@sinonjs-commons-npm-1.8.3-30cf78d93f-6159726db5.zip/node_modules/@sinonjs/commons/",
@@ -2556,6 +2566,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["$", "link:./src::locator=blogpub%40workspace%3A."],
             ["@actions/core", "npm:1.6.0"],
             ["@actions/github", "npm:5.0.0"],
+            ["@octokit/webhooks-definitions", "npm:3.68.1"],
             ["@types/jest", "npm:27.4.0"],
             ["@types/js-yaml", "npm:4.0.5"],
             ["@types/node", "npm:17.0.8"],
