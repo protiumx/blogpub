@@ -2,10 +2,14 @@
 
 [![CI](https://github.com/protiumx/blogpub/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/protiumx/blogpub/actions/workflows/ci.yml)
 
-Github action to publish your blog articles to [Medium](https://medium.com/) or [Dev.to](http://dev.to/).
-It gets the files from a `push` event and process the first `md` file that find.
-**The file is ignored if it already existed before the push event.** 
-This avoid publishing again when making fixes on an existing article.
+Github action to publish your blog articles to [Medium](https://medium.com/) or [Dev.to](http://dev.to/) using their respective REST APIs.
+The action searches for markdown files in the commit of the `push` event and uses **first** `md` file that finds.
+
+## Updating articles
+
+Currently it's not supported to update the articles on the different platforms.
+If the markdown file found in the `push` event **already** exists on the commit **before**, the action will **skip it**.
+This avoids publishing the article again.
 
 ## Pre-requisites
 
@@ -13,7 +17,6 @@ In order to interact with both platforms API's you will need:
 - **Medium** [integration token](https://github.com/Medium/medium-api-docs#21-self-issued-access-tokens)
 - **Dev.to** [API Key](https://developers.forem.com/api#section/Authentication)
 - [Github access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with `reading` permissions
-
 
 ## Usage
 
@@ -30,8 +33,7 @@ on:
       - 'articles/*'
 ```
 
-**Note**: we only want to trigger this action when files are added to the folder
-`blogs`.
+**Note**: we only want to trigger this action when files are added to the `articles` folder.
 
 You can define your job as follows:
 ```yml
@@ -51,7 +53,8 @@ jobs:
           medium_user_id: 1f3b633f149233c057af77f0016a9421fa520b9a59f97f5bd07201c2ca2a4a6bc
 
 ```
-Check [blogpub-test](https://github.com/protiumx/blogpub-test) for more examples or my personal [blog](https://github.com/protiumx/blogpub-test) source
+Check my personal [blog](https://github.com/protiumx/blog) source as example of usage
+
 ## Inputs
 
 - `gh_token`: Github token. **Required**
@@ -98,7 +101,6 @@ The following arguments can be set:
 - `tags`: `[string | string[]]` Comma separated tags or yaml list. Note: Medium allows up to 5 tags whereas Dev.to only 4.
 - `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
 - `published`: `[boolean]`. **Default**: `true`
-- `cover_image`: `[string]` Dev.to cover image
 
 ## Template Support
 
@@ -119,9 +121,8 @@ This is only for Medium
 
 ## Relative Paths
 
-To use any media contained in your repository you can use relative paths. 
-All relative paths will be resolved using the raw url of the markdown down file that 
-is being processed.
+You can use relative paths to use any media files hosted in the same repository as the article files.
+All relative paths will be resolved using the **github raw content** URL.
 
 Example:
 ```
@@ -156,12 +157,9 @@ If you want to test the action locally you could clone `blogpub-test` and use
 
 Please submit a PR with any contribution. Refer to the list of `TODO's` or open issues.
 
-
 ## TODO
 
 - [x] Relative paths to github raw server
-- [x] Support `cover_image` for dev.to API with relative path
-- [ ] Test action with custom `medium` base url.
 - [ ] Remove `axios` in favor of node's `https`
 - [ ] Sanitize inputs
 - [ ] Support publishing to only 1 platform
