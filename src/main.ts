@@ -14,8 +14,9 @@ import { parseArticle } from '$/parser';
 type Github = ReturnType<typeof getOctokit>;
 
 async function loadArticleFile(
-  github: Github, folderName: string,
-): Promise<{ fileName: string, content: string }> {
+  github: Github,
+  folderName: string,
+): Promise<{ fileName: string; content: string }> {
   const { owner, repo } = context.repo;
   // NOTE: Pagination returns 30 files by default
   const commit = (
@@ -24,7 +25,7 @@ async function loadArticleFile(
       repo,
       ref: context.sha,
     })
-  ).data;
+    ).data;
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
   const mdFiles = commit.files!.filter((f) => articleFileRegex.test(f.filename!));
   core.debug(`Found ${mdFiles.length} markdown files`);
@@ -41,18 +42,18 @@ async function loadArticleFile(
 async function fileContentExists(github: Github, filePath: string, ref: string): Promise<boolean> {
   const { owner, repo } = context.repo;
   try {
-    const res = await github.request('HEAD /repos/{owner}/{repo}/contents/{path}?ref=main', {
+    const res = await github.rest.repos.getContent({
       owner,
       repo,
       ref,
       path: filePath,
     });
     return res.status === 200;
-  } catch {
+  } catch (e) {
+    console.log(e);
     return false;
   }
 }
-
 
 export async function run() {
   try {
@@ -67,15 +68,19 @@ export async function run() {
 
     const articleFile = await loadArticleFile(github, articlesFolder);
     const beforeCommit = (context.payload as PushEvent).before;
-    const articleAlreadyExists = await fileContentExists(github, articleFile.fileName, beforeCommit);
+    const articleAlreadyExists = await fileContentExists(
+      github,
+      articleFile.fileName,
+      beforeCommit,
+    );
+    // NOTE: the return is not being recognized in the coverage, hence the ignore statements
     /* istanbul ignore next */
     if (articleAlreadyExists) {
       /* istanbul ignore next */
-      core.debug(`Article ${articleFile.fileName} already published. Skipping.`);      
+      core.debug(`Article ${articleFile.fileName} already published. Skipping.`);
       return;
     }
-    const rawGithubUrl = context.serverUrl
-      .replace('//github.com', '//raw.githubusercontent.com');
+    const rawGithubUrl = context.serverUrl.replace('//github.com', '//raw.githubusercontent.com');
     const { repo, owner } = context.repo;
     const branchName = context.ref.replace('refs/heads/', '');
     const fileUrl = `${rawGithubUrl}/${owner}/${repo}/${branchName}/${articleFile.fileName}`;
