@@ -41,13 +41,12 @@ async function loadArticleFile(
 // Check if file already existed in a commit
 async function checkFileExists(github: Github, filePath: string, ref: string): Promise<boolean> {
   const { owner, repo } = context.repo;
-  const res = await github.request('GET /repos/{owner}/{repo}/contents/{path}/{?ref}', {
+  const res = await github.request('HEAD /repos/{owner}/{repo}/contents/{path}{?ref}', {
     owner,
     repo,
     ref,
     path: filePath,
   });
-  console.log(res, ref, filePath);
   return res.status === 200;
 }
 
