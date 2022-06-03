@@ -39,14 +39,10 @@ async function loadArticleFile(
 }
 
 // Check if file already existed in a commit
-async function checkFileExists(github: Github, filePath: string, ref: string): Promise<boolean> {
+async function checkFileExists(github: Github, path: string, ref: string): Promise<boolean> {
   const { owner, repo } = context.repo;
-  const res = await github.request('GET /repos/{owner}/{repo}/contents/{path}{?ref}', {
-    owner,
-    repo,
-    ref,
-    path: filePath,
-  });
+
+  const res = await github.rest.repos.getContent({ repo, owner, path, ref });
   return res.status === 200;
 }
 
@@ -63,8 +59,8 @@ export async function run() {
     const github = getOctokit(ghToken);
 
     const articleFile = await loadArticleFile(github, articlesFolder);
-    const before = (context.payload as PushEvent).before;
-    const articleAlreadyExists = await checkFileExists(github, articleFile.fileName, before);
+    const beforeCommit = (context.payload as PushEvent).before;
+    const articleAlreadyExists = await checkFileExists(github, articleFile.fileName, beforeCommit);
     /* istanbul ignore next */
     if (articleAlreadyExists) {
       /* istanbul ignore next */
