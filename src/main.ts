@@ -25,7 +25,7 @@ async function loadArticleFile(
       repo,
       ref: context.sha,
     })
-    ).data;
+  ).data;
   const articleFileRegex = new RegExp(`${folderName}\/.*\.md`);
   const mdFiles = commit.files!.filter((f) => articleFileRegex.test(f.filename!));
   core.debug(`Found ${mdFiles.length} markdown files`);
@@ -50,7 +50,6 @@ async function fileContentExists(github: Github, filePath: string, ref: string):
     });
     return res.status === 200;
   } catch (e) {
-    console.log(e);
     return false;
   }
 }
@@ -73,10 +72,7 @@ export async function run() {
       articleFile.fileName,
       beforeCommit,
     );
-    // NOTE: the return is not being recognized in the coverage, hence the ignore statements
-    /* istanbul ignore next */
     if (articleAlreadyExists) {
-      /* istanbul ignore next */
       core.debug(`Article ${articleFile.fileName} already published. Skipping.`);
       return;
     }

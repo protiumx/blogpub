@@ -13,8 +13,8 @@ const octokitMock = {
   rest: {
     repos: {
       getContent: jest.fn(),
-    }
-  }
+    },
+  },
 };
 jest.mock('fs', () => ({
   promises: {
@@ -36,14 +36,13 @@ jest.mock('@actions/github', () => ({
       repo: 'repo',
     },
     payload: {
-      before: 'sha-before'
+      before: 'sha-before',
     },
     sha: 'commit-sha',
   },
   getOctokit: jest.fn(),
 }));
 jest.mock('@actions/core');
-
 
 describe('blogpub', () => {
   beforeEach(jest.clearAllMocks);
@@ -108,19 +107,22 @@ describe('blogpub', () => {
     expect(promises.readFile).toHaveBeenCalledWith('./blogs/blog-01.md', 'utf8');
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
-  
+
   it('should skip if file already exists in repository', async () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
+    (promises.readFile as jest.Mock).mockResolvedValue('content');
+    octokitMock.request.mockResolvedValue(fileData);
     octokitMock.rest.repos.getContent.mockResolvedValue({
       status: 200,
     });
-    octokitMock.request.mockResolvedValueOnce({ status: 200 });
+
     await run();
     expect(parseArticle).not.toHaveBeenCalled();
     expect(octokitMock.rest.repos.getContent).toHaveBeenCalledWith({
       owner: 'owner',
+      path: 'blogs/blog-01.md',
       repo: 'repo',
       ref: 'sha-before',
     });
@@ -133,12 +135,12 @@ describe('blogpub', () => {
 
     const err = new Error('parseArticle');
 
+    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.rest.repos.getContent.mockRejectedValue({ status: 404 });
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockImplementation(() => {
       throw err;
     });
-    octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.rest.repos.getContent.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -164,14 +166,14 @@ describe('blogpub', () => {
     });
     const err = new Error('createArticle');
 
+    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.rest.repos.getContent.mockRejectedValue({ status: 404 });
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockReturnValue({
       config: { title: 'New' },
       content: 'parsed',
     });
     (medium.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.rest.repos.getContent.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -188,7 +190,9 @@ describe('blogpub', () => {
     const template = jest.fn(() => 'compiled');
     (Handlebars.compile as jest.Mock).mockReturnValue(template);
 
-    (core.getInput as jest.Mock).mockReturnValueOnce('github-token');
+    (core.getInput as jest.Mock).mockImplementation((key: string) => {
+      return key === 'articles_folder' ? 'blogs' : '';
+    });
     (promises.readFile as jest.Mock).mockResolvedValue('content');
     (parseArticle as jest.Mock).mockReturnValue({
       config: { title: 'New' },
@@ -196,16 +200,16 @@ describe('blogpub', () => {
     });
     (devto.createArticle as jest.Mock).mockRejectedValue(new Error(''));
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
-    octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.request.mockResolvedValueOnce({ status: 404 });
+    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.rest.repos.getContent.mockRejectedValue({ status: 404 });
 
     await run();
 
-    expect(getOctokit).toHaveBeenCalledWith('github-token');
     expect(core.getInput).toHaveBeenCalledWith('gh_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_token', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_user_id', { required: true });
     expect(core.getInput).toHaveBeenCalledWith('medium_base_url', { required: false });
+    expect(medium.createArticle).toHaveBeenCalled();
     expect(core.setOutput).toHaveBeenCalledWith('medium_url', 'medium.com/new');
   });
 
@@ -232,8 +236,8 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockRejectedValue(err);
-    octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.request.mockResolvedValueOnce({ status: 404 });
+    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.rest.repos.getContent.mockRejectedValue({ status: 404 });
 
     await run();
 
@@ -266,8 +270,8 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockResolvedValue({ url: 'medium.com/new' });
     (devto.createArticle as jest.Mock).mockResolvedValue({ url: 'dev.to/new' });
-    octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.request.mockResolvedValueOnce({ status: 404 });
+    octokitMock.request.mockResolvedValue(fileData);
+    octokitMock.rest.repos.getContent.mockRejectedValue({ status: 404 });
 
     await run();
 
@@ -278,6 +282,8 @@ describe('blogpub', () => {
     });
     expect(core.setOutput).toHaveBeenCalledWith('devto_url', 'dev.to/new');
     expect(parseArticle).toHaveBeenCalledWith(
-      'content', 'raw.githubusercontent.com/owner/repo/main/blogs/');
+      'content',
+      'raw.githubusercontent.com/owner/repo/main/blogs/',
+    );
   });
 });
