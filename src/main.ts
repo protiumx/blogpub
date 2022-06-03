@@ -38,12 +38,19 @@ async function loadArticleFile(
   return { fileName: newArticle.filename!, content };
 }
 
-// Check if file already existed in a commit
-async function checkFileExists(github: Github, path: string, ref: string): Promise<boolean> {
+async function fileContentExists(github: Github, filePath: string, ref: string): Promise<boolean> {
   const { owner, repo } = context.repo;
-
-  const res = await github.rest.repos.getContent({ repo, owner, path, ref });
-  return res.status === 200;
+  try {
+    const res = await github.request('HEAD /repos/{owner}/{repo}/contents/{path}?ref=main', {
+      owner,
+      repo,
+      ref,
+      path: filePath,
+    });
+    return res.status === 200;
+  } catch {
+    return false;
+  }
 }
 
 
@@ -60,7 +67,7 @@ export async function run() {
 
     const articleFile = await loadArticleFile(github, articlesFolder);
     const beforeCommit = (context.payload as PushEvent).before;
-    const articleAlreadyExists = await checkFileExists(github, articleFile.fileName, beforeCommit);
+    const articleAlreadyExists = await fileContentExists(github, articleFile.fileName, beforeCommit);
     /* istanbul ignore next */
     if (articleAlreadyExists) {
       /* istanbul ignore next */
