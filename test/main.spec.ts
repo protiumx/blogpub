@@ -10,6 +10,11 @@ import { parseArticle } from '$/parser';
 
 const octokitMock = {
   request: jest.fn(),
+  rest: {
+    repos: {
+      getContent: jest.fn(),
+    }
+  }
 };
 jest.mock('fs', () => ({
   promises: {
@@ -31,9 +36,9 @@ jest.mock('@actions/github', () => ({
       repo: 'repo',
     },
     payload: {
-      before: 'sha'
+      before: 'sha-before'
     },
-    sha: '1234',
+    sha: 'commit-sha',
   },
   getOctokit: jest.fn(),
 }));
@@ -55,7 +60,7 @@ describe('blogpub', () => {
     },
   };
 
-  it('should set failed when fails to get PR info', async () => {
+  it('should fail if it fails to fetch commit info', async () => {
     const err = new Error('github');
     octokitMock.request.mockRejectedValue(err);
 
@@ -64,12 +69,12 @@ describe('blogpub', () => {
     expect(octokitMock.request).toHaveBeenCalledWith('GET /repos/{owner}/{repo}/commits/{ref}', {
       owner: 'owner',
       repo: 'repo',
-      ref: '1234',
+      ref: 'commit-sha',
     });
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
-  it('should set failed if no markdown files found', async () => {
+  it('should fail if no markdown files found', async () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
@@ -90,7 +95,7 @@ describe('blogpub', () => {
     expect(err.message).toEqual('No markdown files found');
   });
 
-  it('should set failed if fails to read article file', async () => {
+  it('should fail if it fails to read article file', async () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
@@ -108,21 +113,20 @@ describe('blogpub', () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
-    octokitMock.request.mockResolvedValue({
-      data: {
-        files: [
-          {
-            filename: 'readme.txt',
-          },
-        ],
-      },
+    octokitMock.rest.repos.getContent.mockResolvedValue({
+      status: 200,
     });
     octokitMock.request.mockResolvedValueOnce({ status: 200 });
     await run();
     expect(parseArticle).not.toHaveBeenCalled();
+    expect(octokitMock.rest.repos.getContent).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      ref: 'sha-before',
+    });
   });
 
-  it('should set failed if fails to parse file into article', async () => {
+  it('should fail if fails to parse file content into article', async () => {
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
       return key === 'articles_folder' ? 'blogs' : '';
     });
@@ -134,14 +138,14 @@ describe('blogpub', () => {
       throw err;
     });
     octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.request.mockResolvedValueOnce({ status: 404 });
+    octokitMock.rest.repos.getContent.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
-  it('should set failed if fails to create medium article', async () => {
+  it('should fail if it fails to create a Medium article', async () => {
     const template = jest.fn(() => 'compiled');
     (Handlebars.compile as jest.Mock).mockReturnValue(template);
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
@@ -167,7 +171,7 @@ describe('blogpub', () => {
     });
     (medium.createArticle as jest.Mock).mockRejectedValue(err);
     octokitMock.request.mockResolvedValueOnce(fileData);
-    octokitMock.request.mockResolvedValueOnce({ status: 404 });
+    octokitMock.rest.repos.getContent.mockResolvedValueOnce({ status: 404 });
 
     await run();
 
@@ -180,7 +184,7 @@ describe('blogpub', () => {
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
-  it('should upload article to medium and set medium url output', async () => {
+  it('should upload article to medium and set Medium URL output', async () => {
     const template = jest.fn(() => 'compiled');
     (Handlebars.compile as jest.Mock).mockReturnValue(template);
 
@@ -205,7 +209,7 @@ describe('blogpub', () => {
     expect(core.setOutput).toHaveBeenCalledWith('medium_url', 'medium.com/new');
   });
 
-  it('should set failed if fails to create dev.to article', async () => {
+  it('should fail if it fails to create Dev.to article', async () => {
     const template = jest.fn(() => 'compiled');
     (Handlebars.compile as jest.Mock).mockReturnValue(template);
 
@@ -242,7 +246,7 @@ describe('blogpub', () => {
     expect(core.setFailed).toHaveBeenCalledWith(err);
   });
 
-  it('should upload article to dev.to and set dev.tp url output', async () => {
+  it('should upload article to Dev.to and set Dev.to URL output', async () => {
     const template = jest.fn(() => 'compiled');
     (Handlebars.compile as jest.Mock).mockReturnValue(template);
     (core.getInput as jest.Mock).mockImplementation((key: string) => {
