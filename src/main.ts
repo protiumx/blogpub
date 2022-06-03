@@ -47,6 +47,7 @@ async function checkFileExists(github: Github, filePath: string, ref: string): P
     ref,
     path: filePath,
   });
+  console.log(res, ref, filePath);
   return res.status === 200;
 }
 
