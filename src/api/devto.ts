@@ -11,7 +11,6 @@ export async function createArticle(
   const payload = {
     article: {
       body_markdown: content,
-      cover_image: config.cover_image,
       description: config.description,
       published: config.published,
       title: config.title,

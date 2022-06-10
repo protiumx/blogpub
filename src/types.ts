@@ -11,7 +11,6 @@ export enum MediumLicense {
 }
 
 export interface ArticleConfig {
-  cover_image?: string;
   description?: string;
   license?: MediumLicense;
   published?: boolean;

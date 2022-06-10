@@ -3,7 +3,7 @@ import { load as loadYaml } from 'js-yaml';
 
 import { Article, ArticleConfig, MediumLicense } from './types';
 
-const RelativePathRegex = /([\.]{1,2}\/.*)/;
+const RelativePathRegex = /[\('"]([\.]{1,2}\/\S*)[\)'"]/;
 
 function getMetadataIndexes(lines: string[]): number[] {
   const indexes: number[] = [];
