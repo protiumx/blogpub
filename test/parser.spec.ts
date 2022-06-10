@@ -69,12 +69,10 @@ some content`;
 some content`);
   });
 
-
   it('should parse all images with relative path', () => {
     const article = `
 ---
 title: Some Title
-cover_image: ./cover.jpg
 description: New Article
 tags:
   - one
@@ -89,23 +87,32 @@ some content
 ![img](../global/img.png)
 
 <img alt="image" src="./assets/img.gif" />
+<video src='./assets/video.mp4' />
 
 ## Description
 `;
     const parsed = parseArticle(article, 'raw.github.com/protiumx/blogpub/main/articles/');
-    expect(parsed.config.cover_image).toEqual('https://raw.github.com/protiumx/blogpub/main/articles/cover.jpg');
+
     expect(parsed.config.tags).toEqual(['one', 'images']);
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/articles/assets/img.png)',
-      )).toBeTruthy();
+      ),
+    ).toBeTruthy();
     expect(
       parsed.content.includes(
         '![img](https://raw.github.com/protiumx/blogpub/main/global/img.png)',
-      )).toBeTruthy();
+      ),
+    ).toBeTruthy();
     expect(
       parsed.content.includes(
         '<img alt="image" src="https://raw.github.com/protiumx/blogpub/main/articles/assets/img.gif"',
-      )).toBeTruthy();
+      ),
+    ).toBeTruthy();
+    expect(
+      parsed.content.includes(
+        "<video src='https://raw.github.com/protiumx/blogpub/main/articles/assets/video.mp4'",
+      ),
+    ).toBeTruthy();
   });
 });
