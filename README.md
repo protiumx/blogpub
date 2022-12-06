@@ -101,6 +101,7 @@ The following arguments can be set:
 - `tags`: `[string | string[]]` Comma separated tags or yaml list. Note: Medium allows up to 5 tags whereas Dev.to only 4.
 - `license`: `[string]` Medium license type. Refer to [Medium API Docs](https://github.com/Medium/medium-api-docs#33-posts). **Default**: `public-domain`
 - `published`: `[boolean]`. **Default**: `true`
+- `canonicalUrl`: `[string]` The canonical URL of the post (supported in both Medium and Dev.to)
 
 ## Template Support
 
