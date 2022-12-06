@@ -17,6 +17,7 @@ export interface ArticleConfig {
   title?: string;
   // Comma separated tags or a yaml list
   tags?: string | string[];
+  canonicalUrl?: string;
 }
 
 export interface Article {
