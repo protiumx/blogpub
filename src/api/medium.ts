@@ -26,6 +26,7 @@ export async function createArticle(
     content: content,
     license: config.license,
     tags: (config.tags as string[]).slice(0, MAX_TAGS),
+    canonicalUrl: config.canonicalUrl,
     publishStatus: config.published ? PublishStatus.Public : PublishStatus.Draft,
   };
   const result = (

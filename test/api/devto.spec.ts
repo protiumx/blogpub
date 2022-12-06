@@ -13,6 +13,7 @@ describe('dev.to client', () => {
       config: {
         title: 'New',
         tags: ['one', 'two', 'three', 'four', 'five', 'six'],
+        canonicalUrl: 'http://anotherblog.com',
         description: 'description',
         published: false,
       },
@@ -29,6 +30,7 @@ describe('dev.to client', () => {
           body_markdown: 'Content',
           tags: ['one', 'two', 'three', 'four'],
           published: false,
+          canonical_url: 'http://anotherblog.com',
         },
       },
       {

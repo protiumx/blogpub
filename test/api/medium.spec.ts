@@ -18,6 +18,7 @@ describe('medium client', () => {
         license: MediumLicense.CC40Zero,
         tags: ['one', 'two', 'three', 'four', 'five', 'six'],
         published: true,
+        canonicalUrl: 'http://anotherblog.com',
       },
       content: 'Content',
     });
@@ -31,6 +32,7 @@ describe('medium client', () => {
         content: 'Content',
         license: MediumLicense.CC40Zero,
         tags: ['one', 'two', 'three', 'four', 'five'],
+        canonicalUrl: 'http://anotherblog.com',
         publishStatus: PublishStatus.Public,
       },
       {

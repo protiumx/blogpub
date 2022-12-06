@@ -14,6 +14,7 @@ export async function createArticle(
       description: config.description,
       published: config.published,
       title: config.title,
+      canonical_url: config.canonicalUrl,
       tags: (config.tags as string[]).slice(0, MAX_TAGS),
     },
   };
